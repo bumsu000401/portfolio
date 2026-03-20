@@ -10,124 +10,122 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── CSS — Financial Dashboard style ─────────────────────────────────────────
+# ─── CSS — Figma Financial Dashboard (Community) ─────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
 /* ── Global ── */
-html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
-[data-testid="stAppViewContainer"] { background: #F8FAFC; }
+html, body, [class*="css"] { font-family: 'Lato', sans-serif !important; }
+[data-testid="stAppViewContainer"] { background: #F0F0F0; }
 [data-testid="stHeader"]           { background: transparent !important; }
-.block-container { padding-top: 2.5rem !important; max-width: 1080px; }
+.block-container { padding-top: 2rem !important; max-width: 1100px; }
 
-/* ── Sidebar — dark navy ── */
-[data-testid="stSidebar"] { background: #0F172A !important; }
+/* ── Sidebar — white, light blue active ── */
+[data-testid="stSidebar"] { background: #FFFFFF !important; border-right: 1px solid #EBEBEB; }
 
-[data-testid="stSidebar"] .stRadio > div { gap: 4px; }
+[data-testid="stSidebar"] .stRadio > div { gap: 2px; }
 [data-testid="stSidebar"] .stRadio > div > label {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 11px 16px;
-    border-radius: 10px;
+    padding: 10px 14px;
+    border-radius: 6px;
     font-size: 14px;
-    font-weight: 500;
-    color: #64748B;
+    font-weight: 700;
+    color: #C7C7C7;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.12s ease;
 }
 /* 라디오 동그라미 숨기기 */
 [data-testid="stSidebar"] .stRadio > div > label > div:first-child { display: none !important; }
 [data-testid="stSidebar"] .stRadio > div > label:hover {
-    background: #1E293B;
-    color: #CBD5E1;
+    background: #F5F9FF;
+    color: #197BBD;
 }
 [data-testid="stSidebar"] .stRadio > div > label[data-checked="true"] {
-    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-    color: #FFFFFF !important;
-    font-weight: 600;
+    background: #EFF6FF;
+    color: #197BBD !important;
+    font-weight: 700;
 }
-[data-testid="stSidebar"] h3        { color: #F1F5F9 !important; font-size: 15px !important; letter-spacing: 0.3px; }
-[data-testid="stSidebar"] hr        { border-color: #1E293B !important; margin: 14px 0; }
+[data-testid="stSidebar"] h3 { color: #1A3A4F !important; font-size: 15px !important; }
+[data-testid="stSidebar"] hr { border-color: #EBEBEB !important; margin: 12px 0; }
 
 /* ── Metric cards ── */
 [data-testid="stMetric"] {
     background: #FFFFFF;
-    border-radius: 16px;
+    border-radius: 19px;
     padding: 20px 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-    border: 1px solid #F1F5F9;
+    box-shadow: 0 0 1px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.04), 0 16px 24px rgba(0,0,0,0.06);
 }
-[data-testid="stMetricLabel"] { color: #64748B !important; font-size: 12px !important; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-[data-testid="stMetricValue"] { color: #0F172A !important; font-size: 26px !important; font-weight: 700; letter-spacing: -0.5px; }
+[data-testid="stMetricLabel"] { color: #AEAEAE !important; font-size: 13px !important; font-weight: 400; }
+[data-testid="stMetricValue"] { color: #404040 !important; font-size: 24px !important; font-weight: 700; }
 
 /* ── Inputs ── */
 [data-testid="stNumberInput"] input,
 [data-testid="stTextInput"] input {
     background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 10px;
-    color: #1E293B;
+    border: 1px solid #EBEBEB;
+    border-radius: 8px;
+    color: #404040;
     font-size: 14px;
 }
 
 /* ── Expander ── */
 [data-testid="stExpander"] {
     background: #FFFFFF;
-    border: 1px solid #E2E8F0 !important;
-    border-radius: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid #EBEBEB !important;
+    border-radius: 19px;
+    box-shadow: 0 0 1px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.04);
 }
 
 /* ── DataFrame ── */
-[data-testid="stDataFrame"] { border-radius: 14px; overflow: hidden; border: 1px solid #E2E8F0; }
+[data-testid="stDataFrame"] { border-radius: 14px; overflow: hidden; border: 1px solid #EBEBEB; }
 
 /* ── Asset card styles ── */
 .asset-card-wrap {
     background: #FFFFFF;
-    border-radius: 16px;
+    border-radius: 19px;
     padding: 0 20px;
     margin: 8px 0 20px 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-    border: 1px solid #F1F5F9;
+    box-shadow: 0 0 1px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.04), 0 16px 24px rgba(0,0,0,0.06);
 }
 .asset-row {
     display: flex;
     align-items: center;
     padding: 16px 0;
-    border-bottom: 1px solid #F8FAFC;
+    border-bottom: 1px solid #F5F5F5;
 }
 .asset-row:last-child { border-bottom: none; }
 .asset-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
     color: white;
     flex-shrink: 0;
     margin-right: 14px;
 }
-.asset-name   { font-size: 15px; font-weight: 600; color: #0F172A; }
-.asset-detail { font-size: 12px; color: #94A3B8; margin-top: 2px; }
-.asset-krw    { font-size: 15px; font-weight: 600; color: #0F172A; text-align: right; }
-.asset-pct    { font-size: 12px; color: #94A3B8; text-align: right; margin-top: 2px; }
+.asset-name   { font-size: 14px; font-weight: 700; color: #404040; }
+.asset-detail { font-size: 12px; color: #AEAEAE; margin-top: 2px; }
+.asset-krw    { font-size: 14px; font-weight: 700; color: #404040; text-align: right; }
+.asset-pct    { font-size: 12px; color: #AEAEAE; text-align: right; margin-top: 2px; }
 
-.total-num  { font-size: 44px; font-weight: 800; color: #0F172A; letter-spacing: -2px; margin: 8px 0 4px; }
-.total-lbl  { font-size: 13px; color: #94A3B8; font-weight: 500; margin-bottom: 24px; }
-.section-hd { font-size: 15px; font-weight: 700; color: #0F172A; margin: 24px 0 12px; letter-spacing: -0.2px; text-transform: uppercase; }
+.total-num  { font-size: 40px; font-weight: 700; color: #404040; letter-spacing: -1px; margin: 6px 0 2px; }
+.total-lbl  { font-size: 13px; color: #AEAEAE; margin-bottom: 20px; }
+.section-hd { font-size: 18px; font-weight: 700; color: #404040; margin: 20px 0 10px; }
 </style>
 """, unsafe_allow_html=True)
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 ICON_COLORS = [
-    "#6366F1", "#EC4899", "#F59E0B", "#10B981",
-    "#8B5CF6", "#F97316", "#06B6D4", "#EF4444",
-    "#14B8A6", "#84CC16",
+    "#197BBD", "#F4A322", "#27AE60", "#E74C3C",
+    "#8E44AD", "#2EACDE", "#F39C12", "#16A085",
+    "#D35400", "#2980B9",
 ]
 DEFAULTS = {
     "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 1},
@@ -246,7 +244,7 @@ def project_portfolio(initial: float, monthly: float,
 _DARK = dict(
     paper_bgcolor="#FFFFFF",
     plot_bgcolor="#FFFFFF",
-    font=dict(color="#0F172A", family="Inter, sans-serif"),
+    font=dict(color="#404040", family="Lato, sans-serif"),
 )
 
 
@@ -269,9 +267,12 @@ PAGES = ["💼 포트폴리오", "💰 월 투자 배분", "⚖️ 리밸런싱"
 
 with st.sidebar:
     st.markdown(
-        '<h3 style="color:#F1F5F9;font-size:16px;font-weight:700;'
-        'letter-spacing:0.5px;margin:0 0 4px">PORTFOLIO</h3>'
-        '<p style="color:#475569;font-size:11px;margin:0 0 16px">투자 관리 대시보드</p>',
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
+        '<div style="width:32px;height:32px;border-radius:8px;background:#197BBD;'
+        'display:flex;align-items:center;justify-content:center;'
+        'font-size:16px;color:white">📈</div>'
+        '<span style="font-size:16px;font-weight:700;color:#1A3A4F">Portfolio</span>'
+        '</div>',
         unsafe_allow_html=True,
     )
     st.markdown("---")
@@ -282,9 +283,8 @@ with st.sidebar:
 # ════════════════════════════════════════════════════════════════════════════
 if page == PAGES[0]:
     st.markdown(
-        '<h1 style="color:#0F172A;font-size:28px;font-weight:800;'
-        'letter-spacing:-1px;margin:0 0 4px">포트폴리오</h1>'
-        '<p style="color:#94A3B8;font-size:13px;margin:0 0 20px">내 자산 현황</p>',
+        '<h1 style="color:#404040;font-size:32px;font-weight:700;margin:0 0 4px">포트폴리오</h1>'
+        '<p style="color:#AEAEAE;font-size:14px;margin:0 0 20px">내 자산 현황을 한눈에 확인하세요</p>',
         unsafe_allow_html=True,
     )
 
