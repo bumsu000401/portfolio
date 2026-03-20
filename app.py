@@ -127,10 +127,10 @@ if "new_asset_name" not in st.session_state:
     st.session_state["new_asset_name"] = ""
 
 
-def _init_asset(name: str, qty=0.0, price=0.0, ratio=0.0, asset_type="투자"):
+def _init_asset(name: str, qty=0.0, price=0.0, ratio=0.0, asset_type="투자", priority=99):
     """Initialize per-asset session_state keys (only if not already set)."""
     for key, val in [(f"qty_{name}", qty), (f"price_{name}", price),
-                     (f"ratio_{name}", ratio)]:
+                     (f"ratio_{name}", ratio), (f"priority_{name}", priority)]:
         if key not in st.session_state:
             st.session_state[key] = val
     if f"type_{name}" not in st.session_state:
@@ -178,18 +178,21 @@ def delete_asset(name: str):
         st.session_state["assets"].remove(name)
 
 # ─── Algorithms ───────────────────────────────────────────────────────────────
-def calculate_investment(holdings, target_ratios, budget):
-    """Greedy deficit-fill: invest where the gap to target is largest first."""
+def calculate_investment(holdings, target_ratios, budget, priority_order=None):
+    """Greedy deficit-fill in priority order (lowest number = first)."""
     total = sum(holdings.values()) + budget
     result = {a: 0.0 for a in holdings}
     remaining = budget
     deficits = {a: (target_ratios.get(a, 0) / 100) * total - holdings.get(a, 0)
                 for a in holdings}
-    sorted_assets = sorted(deficits, key=lambda x: deficits[x], reverse=True)
+    if priority_order:
+        sorted_assets = priority_order
+    else:
+        sorted_assets = sorted(deficits, key=lambda x: deficits[x], reverse=True)
     for a in sorted_assets:
         if remaining <= 0:
             break
-        invest = min(max(deficits[a], 0.0), remaining)
+        invest = min(max(deficits.get(a, 0.0), 0.0), remaining)
         result[a] = invest
         remaining -= invest
     if remaining > 0:
@@ -355,13 +358,24 @@ with tab2:
     st.header("💰 이번 달 투자금 배분")
     assets = st.session_state["assets"]
 
-    # Target ratio inputs
-    st.subheader("🎯 목표 비율 설정")
-    ratio_cols = st.columns(min(len(assets), 4))
-    for i, asset in enumerate(assets):
-        with ratio_cols[i % len(ratio_cols)]:
-            st.number_input(f"{asset} (%)", min_value=0.0, max_value=100.0,
-                            step=1.0, key=f"ratio_{asset}")
+    # Target ratio + priority inputs
+    st.subheader("🎯 목표 비율 & 투자 우선순위")
+    st.caption("우선순위: 숫자가 낮을수록 먼저 채웁니다. 예산이 부족할 때 순서대로 배분됩니다.")
+    hc1, hc2, hc3 = st.columns([3, 2, 1])
+    hc1.markdown("**자산**")
+    hc2.markdown("**목표 비율 (%)**")
+    hc3.markdown("**우선순위**")
+    for asset in assets:
+        c1, c2, c3 = st.columns([3, 2, 1])
+        c1.markdown(f"<div style='padding-top:8px'>{asset}</div>", unsafe_allow_html=True)
+        with c2:
+            st.number_input("비율", min_value=0.0, max_value=100.0,
+                            step=1.0, key=f"ratio_{asset}",
+                            label_visibility="collapsed")
+        with c3:
+            st.number_input("순위", min_value=1, max_value=99,
+                            step=1, key=f"priority_{asset}",
+                            label_visibility="collapsed")
 
     total_ratio = sum(float(st.session_state.get(f"ratio_{a}", 0)) for a in assets)
     if abs(total_ratio - 100.0) > 0.01:
@@ -395,7 +409,8 @@ with tab2:
                              key="monthly_budget")
 
     if budget > 0 and abs(total_ratio - 100.0) <= 0.01:
-        alloc      = calculate_investment(holdings, ratios, budget)
+        priority_order = sorted(assets, key=lambda a: st.session_state.get(f"priority_{a}", 99))
+        alloc      = calculate_investment(holdings, ratios, budget, priority_order)
         post       = {a: holdings.get(a, 0) + alloc.get(a, 0) for a in assets}
         post_total = sum(post.values())
 
