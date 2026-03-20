@@ -10,74 +10,77 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ─── CSS — dark card UI ───────────────────────────────────────────────────────
+# ─── CSS — light card UI ─────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* Dark background */
-[data-testid="stAppViewContainer"] { background-color: #111111; }
-[data-testid="stHeader"]           { background-color: #111111; }
-[data-testid="stSidebar"]          { background-color: #1a1a1a; }
+/* White background */
+[data-testid="stAppViewContainer"] { background-color: #f5f6fa; }
+[data-testid="stHeader"]           { background-color: #f5f6fa; }
+[data-testid="stSidebar"]          { background-color: #ffffff; }
 
-/* Hide default padding */
-.block-container { padding-top: 1.5rem; }
+/* Fix tab clipping under Streamlit Cloud top bar */
+.block-container { padding-top: 3rem !important; }
 
 /* Tab bar */
 .stTabs [data-baseweb="tab-list"] {
-    background-color: #1c1c1c;
+    background-color: #e8eaf0;
     border-radius: 10px;
     padding: 4px;
     gap: 4px;
 }
 .stTabs [data-baseweb="tab"] {
-    color: #888888;
+    color: #666666;
     border-radius: 8px;
     font-weight: 500;
     font-size: 14px;
 }
 .stTabs [aria-selected="true"] {
-    background-color: #2a2a2a !important;
-    color: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 
 /* Expander */
 [data-testid="stExpander"] {
-    background-color: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
     border-radius: 10px;
 }
 
 /* Inputs */
 [data-testid="stNumberInput"] input,
 [data-testid="stTextInput"] input {
-    background-color: #1e1e1e;
-    color: #f0f0f0;
-    border: 1px solid #333;
+    background-color: #ffffff;
+    color: #1a1a1a;
+    border: 1px solid #d0d0d0;
 }
 
 /* Metric */
 [data-testid="stMetric"] {
-    background-color: #1a1a1a;
+    background-color: #ffffff;
     border-radius: 10px;
     padding: 12px 16px;
+    border: 1px solid #e8e8e8;
 }
 [data-testid="stMetricLabel"] { color: #888888 !important; font-size: 13px; }
-[data-testid="stMetricValue"] { color: #ffffff !important; }
+[data-testid="stMetricValue"] { color: #1a1a1a !important; }
 
 /* Dataframe */
 [data-testid="stDataFrame"] { border-radius: 10px; overflow: hidden; }
 
 /* ── Asset card styles ── */
 .asset-card-wrap {
-    background: #1a1a1a;
+    background: #ffffff;
     border-radius: 14px;
     padding: 0 18px;
     margin: 8px 0 20px 0;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
 }
 .asset-row {
     display: flex;
     align-items: center;
     padding: 14px 0;
-    border-bottom: 1px solid #252525;
+    border-bottom: 1px solid #f0f0f0;
 }
 .asset-row:last-child { border-bottom: none; }
 
@@ -94,13 +97,13 @@ st.markdown("""
     flex-shrink: 0;
     margin-right: 14px;
 }
-.asset-name   { font-size: 16px; font-weight: 600; color: #f0f0f0; }
-.asset-detail { font-size: 13px; color: #777; margin-top: 3px; }
-.asset-krw    { font-size: 16px; font-weight: 500; color: #f0f0f0; text-align: right; }
+.asset-name   { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+.asset-detail { font-size: 13px; color: #888; margin-top: 3px; }
+.asset-krw    { font-size: 16px; font-weight: 500; color: #1a1a1a; text-align: right; }
 
-.total-num  { font-size: 38px; font-weight: 700; color: #fff; letter-spacing: -1px; margin: 6px 0 2px; }
-.total-lbl  { font-size: 13px; color: #777; margin-bottom: 20px; }
-.section-hd { font-size: 18px; font-weight: 600; color: #f0f0f0; margin: 20px 0 10px; }
+.total-num  { font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: -1px; margin: 6px 0 2px; }
+.total-lbl  { font-size: 13px; color: #888; margin-bottom: 20px; }
+.section-hd { font-size: 18px; font-weight: 600; color: #1a1a1a; margin: 20px 0 10px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -217,8 +220,8 @@ def project_portfolio(initial: float, monthly: float,
     return values
 
 # ─── Chart helpers ────────────────────────────────────────────────────────────
-_DARK = dict(paper_bgcolor="#1e1e1e", plot_bgcolor="#1e1e1e",
-             font=dict(color="#e0e0e0"))
+_DARK = dict(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+             font=dict(color="#1a1a1a"))
 
 
 def make_pie(labels, values, title):
@@ -554,13 +557,13 @@ with tab4:
         title="연도별 예상 자산 (원)",
         xaxis_title="기간",
         yaxis_title="자산 (원)",
-        legend=dict(bgcolor="#2a2a2a", bordercolor="#444", borderwidth=1),
+        legend=dict(bgcolor="#f5f5f5", bordercolor="#ddd", borderwidth=1),
         height=500,
         hovermode="x unified",
         **_DARK,
     )
-    fig.update_xaxes(gridcolor="#2a2a2a")
-    fig.update_yaxes(gridcolor="#2a2a2a", tickformat=",d")
+    fig.update_xaxes(gridcolor="#e8e8e8")
+    fig.update_yaxes(gridcolor="#e8e8e8", tickformat=",d")
     st.plotly_chart(fig, use_container_width=True)
 
     # Summary table
