@@ -114,30 +114,25 @@ ICON_COLORS = [
     "#2bcbba", "#eb3b5a",
 ]
 DEFAULTS = {
-    "QLD":     {"qty": 0.0, "price": 0.0, "currency": "USD", "ratio": 30.0},
-    "SCHD":    {"qty": 0.0, "price": 0.0, "currency": "USD", "ratio": 30.0},
-    "Bitcoin": {"qty": 0.0, "price": 0.0, "currency": "USD", "ratio": 15.0},
+    "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0},
+    "SCHD":    {"qty": 0.0, "price": 0.0, "ratio": 30.0},
+    "Bitcoin": {"qty": 0.0, "price": 0.0, "ratio": 15.0},
 }
 
 # ─── Session state ─────────────────────────────────────────────────────────────
 if "assets" not in st.session_state:
     st.session_state["assets"] = list(DEFAULTS.keys())
 
-if "exchange_rate" not in st.session_state:
-    st.session_state["exchange_rate"] = 1380.0
-
 if "new_asset_name" not in st.session_state:
     st.session_state["new_asset_name"] = ""
 
 
-def _init_asset(name: str, qty=0.0, price=0.0, currency="USD", ratio=0.0, asset_type="투자"):
+def _init_asset(name: str, qty=0.0, price=0.0, ratio=0.0, asset_type="투자"):
     """Initialize per-asset session_state keys (only if not already set)."""
     for key, val in [(f"qty_{name}", qty), (f"price_{name}", price),
                      (f"ratio_{name}", ratio)]:
         if key not in st.session_state:
             st.session_state[key] = val
-    if f"cur_{name}" not in st.session_state:
-        st.session_state[f"cur_{name}"] = currency
     if f"type_{name}" not in st.session_state:
         st.session_state[f"type_{name}"] = asset_type
 
@@ -147,15 +142,7 @@ for asset, d in DEFAULTS.items():
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 def get_krw(asset: str) -> float:
-    atype = st.session_state.get(f"type_{asset}", "투자")
-    if atype == "현금":
-        rate   = float(st.session_state.get("exchange_rate", 1380.0))
-        cur    = st.session_state.get(f"cur_{asset}", "KRW")
-        amount = float(st.session_state.get(f"price_{asset}", 0.0))
-        return amount * rate if cur == "USD" else amount
-    else:
-        # price_{asset} stores total KRW (평가금) directly
-        return float(st.session_state.get(f"price_{asset}", 0.0))
+    return float(st.session_state.get(f"price_{asset}", 0.0))
 
 
 def get_unit_price(asset: str) -> float | None:
@@ -182,7 +169,7 @@ def add_asset():
     name = st.session_state["new_asset_name"].strip()
     if name and name not in st.session_state["assets"]:
         st.session_state["assets"].append(name)
-        _init_asset(name, currency="KRW", asset_type="투자")
+        _init_asset(name, asset_type="투자")
     st.session_state["new_asset_name"] = ""
 
 
@@ -262,20 +249,11 @@ tab1, tab2, tab3, tab4 = st.tabs([
 #  TAB 1 — 포트폴리오 (dark card view)
 # ════════════════════════════════════════════════════════════════════════════
 with tab1:
-    hdr_col, rate_col = st.columns([4, 1])
-    with hdr_col:
-        st.markdown(
-            '<h1 style="color:#1a1a1a;font-size:26px;font-weight:700;margin:0">'
-            '포트폴리오</h1>',
-            unsafe_allow_html=True,
-        )
-    with rate_col:
-        # key binds directly to session_state["exchange_rate"]
-        st.number_input("💱 USD/KRW", min_value=100.0, max_value=5000.0,
-                        step=1.0, format="%.0f", key="exchange_rate",
-                        label_visibility="collapsed",
-                        help="USD/KRW 환율 수동 입력")
-        st.caption(f"환율: {st.session_state['exchange_rate']:,.0f}")
+    st.markdown(
+        '<h1 style="color:#1a1a1a;font-size:26px;font-weight:700;margin:0">'
+        '포트폴리오</h1>',
+        unsafe_allow_html=True,
+    )
 
     holdings = all_krw()
     total = sum(holdings.values())
@@ -293,14 +271,9 @@ with tab1:
         color   = icon_color(i)
         pct_str = f"{krw / total * 100:.1f}%" if total > 0 else "0%"
         atype   = st.session_state.get(f"type_{asset}", "투자")
-        cur     = st.session_state.get(f"cur_{asset}", "USD")
 
         if atype == "현금":
-            if cur == "USD":
-                raw = float(st.session_state.get(f"price_{asset}", 0.0))
-                detail_str = f"${raw:,.2f} · {krw:,.0f}원"
-            else:
-                detail_str = f"{krw:,.0f}원"
+            detail_str = f"{krw:,.0f}원"
         else:
             qty = float(st.session_state.get(f"qty_{asset}", 0.0))
             if "bitcoin" in asset.lower() or "btc" in asset.lower():
@@ -339,19 +312,11 @@ with tab1:
             atype = st.session_state.get(f"type_{asset}", "투자")  # re-read after radio
 
             if atype == "현금":
-                cc1, cc2, cc3 = st.columns([3, 2, 0.7], vertical_alignment="bottom")
+                cc1, cc2 = st.columns([4, 0.7], vertical_alignment="bottom")
                 with cc1:
-                    cur_now = st.session_state.get(f"cur_{asset}", "KRW")
-                    label = "금액 (달러)" if cur_now == "USD" else "금액 (원)"
-                    st.number_input(label, min_value=0.0, step=1000.0,
+                    st.number_input("금액 (원)", min_value=0.0, step=1000.0,
                                     format="%.0f", key=f"price_{asset}")
                 with cc2:
-                    options = ["KRW", "USD"]
-                    idx = options.index(cur_now) if cur_now in options else 0
-                    st.selectbox("통화", options, index=idx,
-                                 key=f"cur_{asset}",
-                                 label_visibility="collapsed")
-                with cc3:
                     st.button("🗑️", key=f"del_{asset}",
                               on_click=delete_asset, args=(asset,))
             else:
