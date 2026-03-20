@@ -147,17 +147,22 @@ for asset, d in DEFAULTS.items():
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 def get_krw(asset: str) -> float:
-    rate  = float(st.session_state.get("exchange_rate", 1380.0))
-    cur   = st.session_state.get(f"cur_{asset}", "USD")
     atype = st.session_state.get(f"type_{asset}", "투자")
     if atype == "현금":
+        rate   = float(st.session_state.get("exchange_rate", 1380.0))
+        cur    = st.session_state.get(f"cur_{asset}", "KRW")
         amount = float(st.session_state.get(f"price_{asset}", 0.0))
         return amount * rate if cur == "USD" else amount
     else:
-        qty   = float(st.session_state.get(f"qty_{asset}", 0.0))
-        price = float(st.session_state.get(f"price_{asset}", 0.0))
-        val   = qty * price
-        return val * rate if cur == "USD" else val
+        # price_{asset} stores total KRW (평가금) directly
+        return float(st.session_state.get(f"price_{asset}", 0.0))
+
+
+def get_unit_price(asset: str) -> float | None:
+    """평가금 ÷ 수량 = 주당 단가. 수량이 0이면 None."""
+    qty = float(st.session_state.get(f"qty_{asset}", 0.0))
+    krw = get_krw(asset)
+    return krw / qty if qty > 0 else None
 
 
 def all_krw() -> dict[str, float]:
@@ -351,28 +356,19 @@ with tab1:
                     st.button("🗑️", key=f"del_{asset}",
                               on_click=delete_asset, args=(asset,))
             else:
-                ic1, ic2, ic3, ic4, ic5 = st.columns([2, 2, 2, 1.5, 0.7])
+                ic1, ic2, ic3 = st.columns([2, 3, 0.7])
                 with ic1:
                     st.number_input("수량", min_value=0.0, step=0.0001,
                                     format="%.4f", key=f"qty_{asset}",
                                     label_visibility="collapsed")
                     st.caption("수량")
                 with ic2:
-                    st.number_input("단가", min_value=0.0, step=1.0,
-                                    format="%.2f", key=f"price_{asset}",
+                    st.number_input("평가금 (원)", min_value=0.0, step=10000.0,
+                                    format="%.0f", key=f"price_{asset}",
                                     label_visibility="collapsed")
-                    st.caption("단가")
+                    unit = get_unit_price(asset)
+                    st.caption(f"평가금 (원)  |  단가 ≈ {unit:,.0f}원" if unit else "평가금 (원)")
                 with ic3:
-                    options = ["USD", "KRW"]
-                    cur_now = st.session_state.get(f"cur_{asset}", "USD")
-                    idx = options.index(cur_now) if cur_now in options else 0
-                    st.selectbox("통화", options, index=idx,
-                                 key=f"cur_{asset}",
-                                 label_visibility="collapsed")
-                with ic4:
-                    krw_val = get_krw(asset)
-                    st.caption(f"≈ {krw_val:,.0f}원")
-                with ic5:
                     st.write("")
                     st.button("🗑️", key=f"del_{asset}",
                               on_click=delete_asset, args=(asset,))
@@ -485,13 +481,26 @@ with tab3:
     else:
         rebalance = calculate_rebalance(holdings, ratios)
 
+        def _shares_str(asset, amount_krw):
+            """매수/매도 주 수. 투자형이고 수량>0일 때만 표시."""
+            atype = st.session_state.get(f"type_{asset}", "투자")
+            if atype != "투자":
+                return "-"
+            unit = get_unit_price(asset)
+            if unit is None or unit == 0:
+                return "-"
+            shares = abs(amount_krw) / unit
+            sign = "+" if amount_krw < 0 else "-"
+            return f"{sign}{shares:.2f}주"
+
         rows = [{
-            "자산":           a,
-            "현재 금액 (원)": holdings.get(a, 0),
-            "현재 비율 (%)":  holdings.get(a, 0) / total * 100,
-            "목표 비율 (%)":  ratios.get(a, 0),
-            "목표 금액 (원)": (ratios.get(a, 0) / 100) * total,
-            "매수/매도 (원)": rebalance.get(a, 0),
+            "자산":            a,
+            "현재 금액 (원)":  holdings.get(a, 0),
+            "현재 비율 (%)":   holdings.get(a, 0) / total * 100,
+            "목표 비율 (%)":   ratios.get(a, 0),
+            "목표 금액 (원)":  (ratios.get(a, 0) / 100) * total,
+            "매수/매도 (원)":  rebalance.get(a, 0),
+            "매수/매도 (주)":  _shares_str(a, rebalance.get(a, 0)),
         } for a in assets]
 
         df_reb = pd.DataFrame(rows)
@@ -502,14 +511,21 @@ with tab3:
                 if val < -500:  return "color: #27ae60"   # 매수 → 녹색
             return ""
 
+        def color_shares(val):
+            if isinstance(val, str):
+                if val.startswith("+"):  return "color: #27ae60"
+                if val.startswith("-") and val != "-":  return "color: #e74c3c"
+            return ""
+
         st.dataframe(
             df_reb.style.format({
-                "현재 금액 (원)": "{:,.0f}",
-                "현재 비율 (%)":  "{:.1f}",
-                "목표 비율 (%)":  "{:.1f}",
-                "목표 금액 (원)": "{:,.0f}",
-                "매수/매도 (원)": "{:+,.0f}",
-            }).applymap(color_rebalance, subset=["매수/매도 (원)"]),
+                "현재 금액 (원)":  "{:,.0f}",
+                "현재 비율 (%)":   "{:.1f}",
+                "목표 비율 (%)":   "{:.1f}",
+                "목표 금액 (원)":  "{:,.0f}",
+                "매수/매도 (원)":  "{:+,.0f}",
+            }).applymap(color_rebalance, subset=["매수/매도 (원)"])
+              .applymap(color_shares,    subset=["매수/매도 (주)"]),
             use_container_width=True, hide_index=True,
         )
 
