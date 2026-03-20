@@ -308,7 +308,7 @@ with tab1:
     st.markdown(html, unsafe_allow_html=True)
 
     # ── Edit expander ─────────────────────────────────────────────────────
-    with st.expander("✏️ 수량 · 현재가 편집"):
+    with st.expander("✏️ 수량 · 평가금 편집"):
         for asset in list(assets):
             c1, c2, c3, c4, c5 = st.columns([2, 2, 2, 1.5, 0.7])
             with c1:
@@ -319,10 +319,10 @@ with tab1:
                                 label_visibility="collapsed")
                 st.caption("수량")
             with c3:
-                st.number_input("현재가", min_value=0.0, step=1.0,
+                st.number_input("평가금", min_value=0.0, step=1.0,
                                 format="%.2f", key=f"price_{asset}",
                                 label_visibility="collapsed")
-                st.caption("현재가")
+                st.caption("평가금")
             with c4:
                 options = ["USD", "KRW"]
                 # selectbox needs index; read current value from session_state
