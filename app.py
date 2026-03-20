@@ -375,13 +375,12 @@ with tab1:
             st.divider()
 
         st.markdown("---")
-        a1, a2 = st.columns([4, 1])
+        a1, a2 = st.columns([4, 1], vertical_alignment="bottom")
         with a1:
             st.text_input("새 자산 이름",
                           placeholder="예: 원화 현금, TQQQ, 달러 현금 ...",
                           key="new_asset_name")
         with a2:
-            st.write("")
             st.button("＋ 추가", on_click=add_asset, use_container_width=True)
 
 # ════════════════════════════════════════════════════════════════════════════
