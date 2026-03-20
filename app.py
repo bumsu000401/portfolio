@@ -10,110 +10,176 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── CSS — light card UI ─────────────────────────────────────────────────────
+# ─── CSS — iOS Light Mode ─────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* White background */
-[data-testid="stAppViewContainer"] { background-color: #f5f6fa; }
-[data-testid="stHeader"]           { background-color: #f5f6fa; }
-[data-testid="stSidebar"]          { background-color: #ffffff; }
+/* ── iOS system font ── */
+* { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important; }
 
-/* Fix tab clipping under Streamlit Cloud top bar */
-.block-container { padding-top: 3rem !important; }
+/* ── iOS backgrounds ── */
+/* systemGroupedBackground: #F2F2F7 */
+[data-testid="stAppViewContainer"] { background-color: #F2F2F7; }
+[data-testid="stHeader"]           { background-color: #F2F2F7; }
+[data-testid="stSidebar"]          { background-color: #F2F2F7;
+                                     border-right: 1px solid #C6C6C8; }
 
-/* Sidebar nav radio */
-[data-testid="stSidebar"] .stRadio > div { gap: 4px; }
+/* Fix padding under Streamlit Cloud top bar */
+.block-container { padding-top: 2rem !important; }
+
+/* ── Sidebar ── */
+[data-testid="stSidebar"] .stRadio > div { gap: 2px; }
 [data-testid="stSidebar"] .stRadio > div > label {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 500;
-    color: #555555;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #000000;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background 0.12s;
 }
-[data-testid="stSidebar"] .stRadio > div > label:hover { background: #f0f2f8; }
+[data-testid="stSidebar"] .stRadio > div > label:hover {
+    background: rgba(0,122,255,0.08);
+}
 [data-testid="stSidebar"] .stRadio > div > label[data-checked="true"] {
-    background: #e8edf8;
-    color: #1a1a1a;
+    background: rgba(0,122,255,0.12);
+    color: #007AFF;
     font-weight: 600;
 }
-
-/* Expander */
-[data-testid="stExpander"] {
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
+/* Radio circle color → iOS blue */
+[data-testid="stSidebar"] .stRadio input[type="radio"]:checked {
+    accent-color: #007AFF;
 }
 
-/* Inputs */
+/* ── Expander — iOS grouped card ── */
+[data-testid="stExpander"] {
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+}
+[data-testid="stExpander"] summary {
+    font-weight: 600;
+    font-size: 15px;
+    color: #000000;
+}
+
+/* ── Inputs — iOS style ── */
 [data-testid="stNumberInput"] input,
 [data-testid="stTextInput"] input {
-    background-color: #ffffff;
-    color: #1a1a1a;
-    border: 1px solid #d0d0d0;
-}
-
-/* Metric */
-[data-testid="stMetric"] {
-    background-color: #ffffff;
+    background-color: #FFFFFF;
+    color: #000000;
+    border: none;
     border-radius: 10px;
-    padding: 12px 16px;
-    border: 1px solid #e8e8e8;
+    box-shadow: 0 0 0 1px #C6C6C8;
+    padding: 10px 12px;
+    font-size: 15px;
 }
-[data-testid="stMetricLabel"] { color: #888888 !important; font-size: 13px; }
-[data-testid="stMetricValue"] { color: #1a1a1a !important; }
+[data-testid="stNumberInput"] input:focus,
+[data-testid="stTextInput"] input:focus {
+    box-shadow: 0 0 0 2px #007AFF !important;
+    outline: none;
+}
 
-/* Dataframe */
-[data-testid="stDataFrame"] { border-radius: 10px; overflow: hidden; }
+/* ── Metric — iOS stat tile ── */
+[data-testid="stMetric"] {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    padding: 14px 18px;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+[data-testid="stMetricLabel"] {
+    color: #6C6C70 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+[data-testid="stMetricValue"] {
+    color: #000000 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.5px;
+}
+
+/* ── Dataframe ── */
+[data-testid="stDataFrame"] {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* ── Slider ── */
+[data-testid="stSlider"] [role="slider"] { background: #007AFF !important; }
+[data-testid="stSlider"] [data-testid="stSliderThumb"] { background: #007AFF !important; }
+
+/* ── Buttons ── */
+[data-testid="stButton"] > button {
+    background-color: #007AFF;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 10px 20px;
+    transition: opacity 0.15s;
+}
+[data-testid="stButton"] > button:hover { opacity: 0.85; background-color: #007AFF; }
+
+/* ── Alert / info boxes ── */
+[data-testid="stAlert"] { border-radius: 12px; border: none; }
 
 /* ── Asset card styles ── */
 .asset-card-wrap {
-    background: #ffffff;
-    border-radius: 14px;
+    background: #FFFFFF;
+    border-radius: 16px;
     padding: 0 18px;
     margin: 8px 0 20px 0;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 .asset-row {
     display: flex;
     align-items: center;
     padding: 14px 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #F2F2F7;
 }
 .asset-row:last-child { border-bottom: none; }
 
 .asset-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;     /* iOS app icon shape */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     color: white;
     flex-shrink: 0;
     margin-right: 14px;
 }
-.asset-name   { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-.asset-detail { font-size: 13px; color: #888; margin-top: 3px; }
-.asset-krw    { font-size: 16px; font-weight: 500; color: #1a1a1a; text-align: right; }
+.asset-name   { font-size: 16px; font-weight: 600; color: #000000; }
+.asset-detail { font-size: 13px; color: #6C6C70; margin-top: 2px; }
+.asset-krw    { font-size: 16px; font-weight: 500; color: #000000; text-align: right; }
+.asset-pct    { font-size: 12px; color: #6C6C70; text-align: right; margin-top: 2px; }
 
-.total-num  { font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: -1px; margin: 6px 0 2px; }
-.total-lbl  { font-size: 13px; color: #888; margin-bottom: 20px; }
-.section-hd { font-size: 18px; font-weight: 600; color: #1a1a1a; margin: 20px 0 10px; }
+.total-num  { font-size: 40px; font-weight: 700; color: #000000;
+              letter-spacing: -1.5px; margin: 8px 0 2px; }
+.total-lbl  { font-size: 13px; color: #6C6C70; margin-bottom: 20px; font-weight: 400; }
+.section-hd { font-size: 20px; font-weight: 700; color: #000000;
+              margin: 24px 0 10px; letter-spacing: -0.3px; }
 </style>
 """, unsafe_allow_html=True)
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 ICON_COLORS = [
-    "#4e9af1", "#ff6b6b", "#f7b731", "#26de81",
-    "#a55eea", "#fd9644", "#45aaf2", "#fc5c65",
-    "#2bcbba", "#eb3b5a",
+    "#007AFF", "#FF3B30", "#FF9500", "#34C759",
+    "#AF52DE", "#FF2D55", "#5AC8FA", "#FFCC00",
+    "#00C7BE", "#30B0C7",
 ]
 DEFAULTS = {
     "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 1},
@@ -229,8 +295,8 @@ def project_portfolio(initial: float, monthly: float,
     return values
 
 # ─── Chart helpers ────────────────────────────────────────────────────────────
-_DARK = dict(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
-             font=dict(color="#1a1a1a"))
+_DARK = dict(paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
+             font=dict(color="#000000", family="-apple-system, BlinkMacSystemFont, Helvetica Neue, Arial"))
 
 
 def make_pie(labels, values, title):
@@ -251,8 +317,15 @@ def make_pie(labels, values, title):
 PAGES = ["💼 포트폴리오", "💰 월 투자 배분", "⚖️ 리밸런싱", "📈 미래 예측"]
 
 with st.sidebar:
-    st.markdown("### 📈 포트폴리오")
-    st.markdown("---")
+    st.markdown(
+        "<div style='padding:8px 4px 16px;font-size:22px;font-weight:700;"
+        "color:#000;letter-spacing:-0.5px'>📈 포트폴리오</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<hr style='border:none;border-top:1px solid #C6C6C8;margin:0 0 12px'>",
+        unsafe_allow_html=True,
+    )
     page = st.radio("페이지", PAGES, label_visibility="collapsed")
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -301,7 +374,7 @@ if page == PAGES[0]:
   </div>
   <div>
     <div class="asset-krw">{krw:,.0f}원</div>
-    <div style="font-size:12px;color:#777;text-align:right">{pct_str}</div>
+    <div class="asset-pct">{pct_str}</div>
   </div>
 </div>"""
     html += '</div>'
