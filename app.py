@@ -2,8 +2,6 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 import random
-import datetime
-import yfinance as yf
 
 # ─── Page config ─────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -13,318 +11,124 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── CSS ──────────────────────────────────────────────────────────────────────
+# ─── CSS — Figma Financial Dashboard (Community) ─────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
-/* ── Design tokens ── */
-:root {
-    --bg:          #080B12;
-    --surface:     #0F1420;
-    --surface-2:   #161C2D;
-    --border:      #1E2740;
-    --border-2:    #28334F;
-    --accent:      #4F8EFF;
-    --accent-dim:  rgba(79,142,255,0.12);
-    --teal:        #00D4AA;
-    --teal-dim:    rgba(0,212,170,0.12);
-    --gold:        #FFB547;
-    --text:        #CDD6F4;
-    --text-muted:  #4A5680;
-    --positive:    #22D97B;
-    --negative:    #F04060;
-}
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
 /* ── Global ── */
-html, body, [class*="css"] {
-    font-family: 'Syne', sans-serif !important;
-    color: var(--text) !important;
-}
-[data-testid="stAppViewContainer"],
-[data-testid="stMain"],
-.main {
-    background: var(--bg) !important;
-}
-section[data-testid="stSidebar"] ~ div[data-testid="stMain"] {
-    background: var(--bg) !important;
-}
+html, body, [class*="css"] { font-family: 'Lato', sans-serif !important; }
+[data-testid="stAppViewContainer"] { background: #F0F0F0; }
+[data-testid="stHeader"]           { background: transparent !important; }
+.block-container { padding-top: 2rem !important; max-width: 1100px; }
 
-/* ── Hide Streamlit chrome ── */
-footer { display: none !important; }
-#MainMenu { display: none !important; }
-[data-testid="stToolbar"] { display: none !important; }
+/* ── Sidebar — white, light blue active ── */
+[data-testid="stSidebar"] { background: #FFFFFF !important; border-right: 1px solid #EBEBEB; }
 
-/* ── Layout ── */
-.block-container {
-    padding-top: 2.5rem !important;
-    padding-bottom: 4rem !important;
-    max-width: 1100px;
-}
-
-/* ── Sidebar ── */
-[data-testid="stSidebar"] {
-    background: var(--surface) !important;
-    border-right: 1px solid var(--border) !important;
-}
-[data-testid="stSidebar"] > div:first-child {
-    padding-top: 1.5rem !important;
-}
-[data-testid="stSidebar"] .stRadio > div { gap: 3px; }
+[data-testid="stSidebar"] .stRadio > div { gap: 2px; }
 [data-testid="stSidebar"] .stRadio > div > label {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 9px 12px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #C7C7C7;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.12s ease;
 }
+/* 라디오 동그라미 숨기기 */
 [data-testid="stSidebar"] .stRadio > div > label > div:first-child { display: none !important; }
 [data-testid="stSidebar"] .stRadio > div > label:hover {
-    background: var(--surface-2);
-    color: var(--text);
-    border-color: var(--border);
+    background: #F5F9FF;
+    color: #197BBD;
 }
-[data-testid="stSidebar"] .stRadio > div > label[data-checked="true"],
-[data-testid="stSidebar"] .stRadio > div > label:has(input:checked) {
-    background: var(--accent-dim) !important;
-    color: var(--accent) !important;
-    font-weight: 600;
-    border-color: rgba(79,142,255,0.25) !important;
+[data-testid="stSidebar"] .stRadio > div > label[data-checked="true"] {
+    background: #EFF6FF;
+    color: #197BBD !important;
+    font-weight: 700;
 }
-[data-testid="stSidebar"] h3 { color: var(--text) !important; font-size: 13px !important; font-weight: 700 !important; }
-[data-testid="stSidebar"] hr { border-color: var(--border) !important; margin: 12px 0; }
+[data-testid="stSidebar"] h3 { color: #1A3A4F !important; font-size: 15px !important; }
+[data-testid="stSidebar"] hr { border-color: #EBEBEB !important; margin: 12px 0; }
 
 /* ── Metric cards ── */
 [data-testid="stMetric"] {
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 20px 22px;
-    border: 1px solid var(--border);
-    position: relative;
-    overflow: hidden;
+    background: #FFFFFF;
+    border-radius: 19px;
+    padding: 20px 24px;
+    box-shadow: 0 0 1px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.04), 0 16px 24px rgba(0,0,0,0.06);
 }
-[data-testid="stMetric"]::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--teal));
-}
-[data-testid="stMetricLabel"] {
-    color: var(--text-muted) !important;
-    font-size: 10px !important;
-    font-weight: 600 !important;
-    letter-spacing: 1.5px !important;
-    text-transform: uppercase !important;
-}
-[data-testid="stMetricValue"] {
-    color: var(--text) !important;
-    font-size: 20px !important;
-    font-weight: 600 !important;
-    font-family: 'JetBrains Mono', monospace !important;
-}
+[data-testid="stMetricLabel"] { color: #AEAEAE !important; font-size: 13px !important; font-weight: 400; }
+[data-testid="stMetricValue"] { color: #404040 !important; font-size: 24px !important; font-weight: 700; }
 
 /* ── Inputs ── */
 [data-testid="stNumberInput"] input,
 [data-testid="stTextInput"] input {
-    background: var(--surface-2) !important;
-    border: 1px solid var(--border-2) !important;
-    border-radius: 8px !important;
-    color: var(--text) !important;
-    font-size: 14px !important;
-    font-family: 'JetBrains Mono', monospace !important;
-}
-[data-testid="stNumberInput"] input:focus,
-[data-testid="stTextInput"] input:focus {
-    outline: none !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 0 3px var(--accent-dim) !important;
-}
-[data-testid="stNumberInput"] > div,
-[data-testid="stTextInput"] > div {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    background: #FFFFFF;
+    border: 1px solid #EBEBEB;
+    border-radius: 8px;
+    color: #404040;
+    font-size: 14px;
 }
 
 /* ── Expander ── */
 [data-testid="stExpander"] {
-    background: var(--surface) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 12px !important;
-}
-[data-testid="stExpander"] summary {
-    color: var(--text) !important;
+    background: #FFFFFF;
+    border: 1px solid #EBEBEB !important;
+    border-radius: 19px;
+    box-shadow: 0 0 1px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.04);
 }
 
 /* ── DataFrame ── */
-[data-testid="stDataFrame"] {
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-}
-
-/* ── Alert ── */
-[data-testid="stAlert"] {
-    border-radius: 10px !important;
-    border: 1px solid var(--border) !important;
-    background: var(--surface) !important;
-    font-size: 13px !important;
-    color: var(--text) !important;
-}
-
-/* ── Divider ── */
-hr { border-color: var(--border) !important; }
-
-/* ── Subheader / caption ── */
-[data-testid="stHeadingWithActionElements"] h2,
-[data-testid="stHeadingWithActionElements"] h3 {
-    font-size: 10px !important;
-    font-weight: 700 !important;
-    color: var(--text-muted) !important;
-    text-transform: uppercase !important;
-    letter-spacing: 2.5px !important;
-    margin: 24px 0 12px !important;
-    padding-bottom: 10px !important;
-    border-bottom: 1px solid var(--border) !important;
-}
-[data-testid="stCaptionContainer"] p {
-    font-size: 12px !important;
-    color: var(--text-muted) !important;
-}
-
-/* ── Slider ── */
-[data-testid="stSlider"] [data-testid="stMarkdownContainer"] p {
-    color: var(--text) !important;
-}
-
-/* ── Select / Radio labels ── */
-[data-testid="stRadio"] label { color: var(--text) !important; }
-
-/* ── Buttons ── */
-[data-testid="stBaseButton-secondary"] {
-    border: 1px solid var(--border-2) !important;
-    border-radius: 8px !important;
-    color: var(--text) !important;
-    background: var(--surface-2) !important;
-    font-family: 'Syne', sans-serif !important;
-    font-size: 13px !important;
-    transition: all 0.15s ease !important;
-}
-[data-testid="stBaseButton-secondary"]:hover {
-    border-color: var(--accent) !important;
-    color: var(--accent) !important;
-    background: var(--accent-dim) !important;
-}
+[data-testid="stDataFrame"] { border-radius: 14px; overflow: hidden; border: 1px solid #EBEBEB; }
 
 /* ── Asset card styles ── */
 .asset-card-wrap {
-    background: var(--surface);
-    border-radius: 12px;
+    background: #FFFFFF;
+    border-radius: 19px;
     padding: 0 20px;
     margin: 8px 0 20px 0;
-    border: 1px solid var(--border);
+    box-shadow: 0 0 1px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.04), 0 16px 24px rgba(0,0,0,0.06);
 }
 .asset-row {
     display: flex;
     align-items: center;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    border-bottom: 1px solid #F5F5F5;
 }
 .asset-row:last-child { border-bottom: none; }
 .asset-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
     color: white;
     flex-shrink: 0;
     margin-right: 14px;
 }
-.asset-name   { font-size: 13px; font-weight: 600; color: var(--text); }
-.asset-detail { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
-.asset-krw    { font-size: 13px; font-weight: 500; color: var(--text); text-align: right; font-family: 'JetBrains Mono', monospace; }
-.asset-pct    { font-size: 11px; color: var(--text-muted); text-align: right; margin-top: 2px; }
+.asset-name   { font-size: 14px; font-weight: 700; color: #404040; }
+.asset-detail { font-size: 12px; color: #AEAEAE; margin-top: 2px; }
+.asset-krw    { font-size: 14px; font-weight: 700; color: #404040; text-align: right; }
+.asset-pct    { font-size: 12px; color: #AEAEAE; text-align: right; margin-top: 2px; }
 
-.total-num  { font-size: 36px; font-weight: 700; color: var(--text); letter-spacing: -1.5px; margin: 6px 0 2px; font-family: 'JetBrains Mono', monospace; }
-.total-lbl  { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
-.section-hd { font-size: 10px; font-weight: 700; color: var(--text-muted); margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 2px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-.quote-subtitle { font-size: 11px !important; color: var(--text-muted) !important; font-style: italic !important; margin: 0 0 24px !important; line-height: 1.6 !important; }
-
-/* ── Market ticker strip ── */
-.ticker-strip {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 12px 0 20px;
-}
-.ticker-chip {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 150px;
-    flex: 1;
-}
-.ticker-label { font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
-.ticker-price { font-size: 14px; font-weight: 600; color: var(--text); font-family: 'JetBrains Mono', monospace; }
-.ticker-chg-pos { font-size: 11px; color: #22D97B; font-family: 'JetBrains Mono', monospace; }
-.ticker-chg-neg { font-size: 11px; color: #F04060; font-family: 'JetBrains Mono', monospace; }
-
-/* ── News cards ── */
-.news-section-hd { font-size: 10px; font-weight: 700; color: var(--text-muted); margin: 24px 0 12px; text-transform: uppercase; letter-spacing: 2.5px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-.news-asset-hd { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin: 16px 0 8px; display: flex; align-items: center; gap: 8px; }
-.news-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 13px 16px;
-    margin-bottom: 7px;
-    cursor: pointer;
-    transition: border-color 0.15s ease, background 0.15s ease;
-    text-decoration: none;
-    display: block;
-}
-.news-card:hover { border-color: var(--border-2); background: var(--surface-2); }
-.news-title { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.45; margin-bottom: 5px; }
-.news-meta { font-size: 11px; color: var(--text-muted); display: flex; gap: 8px; align-items: center; }
-.news-dot { color: var(--border-2); }
+.total-num  { font-size: 40px; font-weight: 700; color: #404040; letter-spacing: -1px; margin: 6px 0 2px; }
+.total-lbl  { font-size: 13px; color: #AEAEAE; margin-bottom: 20px; }
+.section-hd { font-size: 18px; font-weight: 700; color: #404040; margin: 20px 0 10px; }
+.quote-subtitle { font-size: 20px !important; color: #AEAEAE !important; font-style: italic !important; margin: 0 0 20px !important; }
 </style>
 """, unsafe_allow_html=True)
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 ICON_COLORS = [
-    "#4F8EFF",  # electric blue
-    "#00D4AA",  # teal
-    "#FFB547",  # gold
-    "#F04060",  # red
-    "#A855F7",  # purple
-    "#22D97B",  # green
-    "#FF6B6B",  # coral
-    "#38BDF8",  # sky
-    "#FB923C",  # orange
-    "#4FFFB0",  # mint
+    "#197BBD", "#F4A322", "#27AE60", "#E74C3C",
+    "#8E44AD", "#2EACDE", "#F39C12", "#16A085",
+    "#D35400", "#2980B9",
 ]
-
-CHART_COLORS = [
-    "#4F8EFF", "#00D4AA", "#FFB547", "#F04060",
-    "#A855F7", "#22D97B", "#FF6B6B", "#38BDF8",
-    "#FB923C", "#4FFFB0",
-]
-
 DEFAULTS = {
     "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 1},
     "Bitcoin": {"qty": 0.0, "price": 0.0, "ratio": 15.0, "priority": 2},
@@ -332,52 +136,6 @@ DEFAULTS = {
     "원화":    {"qty": 0.0, "price": 0.0, "ratio": 15.0, "priority": 4, "asset_type": "현금"},
     "달러":    {"qty": 0.0, "price": 0.0, "ratio": 10.0, "priority": 4, "asset_type": "현금"},
 }
-
-# ─── Yahoo Finance 연동 ────────────────────────────────────────────────────────
-# 자산명 → yfinance ticker 매핑 (사용자가 직접 설정 가능)
-TICKER_MAP: dict[str, str] = {
-    "QLD":     "QLD",
-    "Bitcoin": "BTC-USD",
-    "SCHD":    "SCHD",
-    "달러":    None,   # 현금 — 시세 없음
-    "원화":    None,
-}
-
-@st.cache_data(ttl=300, show_spinner=False)
-def fetch_quote(ticker: str) -> dict | None:
-    """현재가·등락률 반환. 실패 시 None."""
-    try:
-        fi = yf.Ticker(ticker).fast_info
-        price = fi.last_price
-        prev  = fi.previous_close
-        chg   = (price - prev) / prev * 100 if prev else 0.0
-        return {"price": price, "change_pct": chg, "currency": fi.currency or "USD"}
-    except Exception:
-        return None
-
-@st.cache_data(ttl=300, show_spinner=False)
-def get_usdkrw() -> float:
-    """USD/KRW 환율. 실패 시 1380 fallback."""
-    try:
-        return yf.Ticker("USDKRW=X").fast_info.last_price or 1380.0
-    except Exception:
-        return 1380.0
-
-@st.cache_data(ttl=600, show_spinner=False)
-def fetch_news(ticker: str) -> list[dict]:
-    """최신 뉴스 최대 4건 반환."""
-    try:
-        news = yf.Ticker(ticker).news or []
-        return news[:4]
-    except Exception:
-        return []
-
-def _time_ago(ts: int) -> str:
-    """Unix timestamp → '3시간 전' 형식."""
-    diff = int(datetime.datetime.now().timestamp()) - ts
-    if diff < 3600:   return f"{diff // 60}분 전"
-    if diff < 86400:  return f"{diff // 3600}시간 전"
-    return f"{diff // 86400}일 전"
 
 # ─── 투자 대가 명언 ──────────────────────────────────────────────────────────────
 QUOTES = [
@@ -531,9 +289,9 @@ def project_portfolio(initial: float, monthly: float,
 
 # ─── Chart helpers ────────────────────────────────────────────────────────────
 _DARK = dict(
-    paper_bgcolor="#0F1420",
-    plot_bgcolor="#0F1420",
-    font=dict(color="#CDD6F4", family="Syne, sans-serif"),
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor="#FFFFFF",
+    font=dict(color="#404040", family="Lato, sans-serif"),
 )
 
 
@@ -544,14 +302,14 @@ def make_pie(labels, values, title):
         textfont=dict(size=12),
         hovertemplate="%{label}<br>%{value:,.0f}원<br>%{percent}<extra></extra>",
         marker=dict(
-            colors=CHART_COLORS[:len(labels)],
-            line=dict(color="#080B12", width=2),
+            colors=ICON_COLORS[:len(labels)],
+            line=dict(color="#FFFFFF", width=2),
         ),
         rotation=90,
     ))
     fig.update_layout(
         title_text=title, title_x=0.5,
-        title_font=dict(size=14, color="#CDD6F4"),
+        title_font=dict(size=14, color="#404040"),
         margin=dict(t=50, b=20, l=20, r=20),
         height=370, showlegend=False,
         transition=dict(duration=500, easing="cubic-in-out"),
@@ -566,16 +324,15 @@ PAGES = ["💼 포트폴리오", "💰 월 투자 배분", "⚖️ 리밸런싱"
 
 with st.sidebar:
     st.markdown(
-        '<div style="display:flex;align-items:center;gap:10px;padding:0 4px;margin-bottom:20px">'
-        '<div style="width:28px;height:28px;border-radius:7px;'
-        'background:linear-gradient(135deg,#4F8EFF,#00D4AA);'
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
+        '<div style="width:32px;height:32px;border-radius:8px;background:#197BBD;'
         'display:flex;align-items:center;justify-content:center;'
-        'font-size:14px;line-height:1">📈</div>'
-        '<span style="font-size:14px;font-weight:700;color:#CDD6F4;letter-spacing:-0.3px">Portfolio</span>'
+        'font-size:16px;color:white">📈</div>'
+        '<span style="font-size:16px;font-weight:700;color:#1A3A4F">Portfolio</span>'
         '</div>',
         unsafe_allow_html=True,
     )
-    st.markdown('<hr style="border:none;border-top:1px solid #1E2740;margin:0 4px 14px">', unsafe_allow_html=True)
+    st.markdown("---")
     page = st.radio("페이지", PAGES, label_visibility="collapsed")
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -584,87 +341,17 @@ with st.sidebar:
 if page == PAGES[0]:
     _q, _a = st.session_state["daily_quote"]
     st.markdown(
-        '<h1 style="color:#CDD6F4;font-size:24px;font-weight:700;margin:0 0 4px;letter-spacing:-0.8px">포트폴리오</h1>'
-        f'<div class="quote-subtitle">&ldquo;{_q}&rdquo; — {_a}</div>',
+        '<h1 style="color:#404040;font-size:32px;font-weight:700;margin:0 0 4px">포트폴리오</h1>'
+        f'<div style="color:#AEAEAE;font-size:20px;font-style:italic;margin:0 0 20px">'
+        f'&ldquo;{_q}&rdquo; — {_a}</div>',
         unsafe_allow_html=True,
     )
 
     holdings = all_krw()
     total = sum(holdings.values())
 
-    # ── 시장 현황 strip ──────────────────────────────────────────────────
-    st.markdown('<div class="news-section-hd">시장 현황</div>', unsafe_allow_html=True)
-    fx = get_usdkrw()
-    assets_live = st.session_state["assets"]
-    chips_html = '<div class="ticker-strip">'
-    for asset in assets_live:
-        ticker = TICKER_MAP.get(asset)
-        if not ticker:
-            continue
-        q = fetch_quote(ticker)
-        if not q:
-            continue
-        price   = q["price"]
-        chg     = q["change_pct"]
-        cur     = q["currency"]
-        sign    = "▲" if chg >= 0 else "▼"
-        chg_cls = "ticker-chg-pos" if chg >= 0 else "ticker-chg-neg"
-        if cur == "KRW":
-            price_str = f"₩{price:,.0f}"
-        else:
-            price_str = f"${price:,.2f}" if price < 1000 else f"${price:,.0f}"
-        chips_html += f"""
-<div class="ticker-chip">
-  <div>
-    <div class="ticker-label">{asset}</div>
-    <div class="ticker-price">{price_str}</div>
-  </div>
-  <div class="{chg_cls}">{sign} {abs(chg):.2f}%</div>
-</div>"""
-    # 환율 칩
-    chips_html += f"""
-<div class="ticker-chip">
-  <div>
-    <div class="ticker-label">USD/KRW</div>
-    <div class="ticker-price">₩{fx:,.1f}</div>
-  </div>
-</div>"""
-    chips_html += '</div>'
-    st.markdown(chips_html, unsafe_allow_html=True)
-
-    # ── 시세 자동 입력 버튼 ─────────────────────────────────────────────
-    if st.button("⚡ 시세 자동 입력  (Yahoo Finance)", use_container_width=False):
-        updated = []
-        for asset in assets_live:
-            ticker = TICKER_MAP.get(asset)
-            if not ticker:
-                continue
-            atype = st.session_state.get(f"type_{asset}", "투자")
-            if atype == "현금":
-                continue
-            q = fetch_quote(ticker)
-            if not q:
-                continue
-            qty = float(st.session_state.get(f"qty_{asset}", 0.0))
-            if qty == 0:
-                continue
-            price_usd = q["price"]
-            cur       = q["currency"]
-            # 원화 환산
-            if cur == "KRW":
-                krw_val = price_usd * qty
-            else:
-                krw_val = price_usd * qty * fx
-            st.session_state[f"price_{asset}"] = krw_val
-            updated.append(asset)
-        if updated:
-            st.success(f"✅ {', '.join(updated)} 평가금 자동 입력 완료 (환율 ₩{fx:,.1f})")
-            st.rerun()
-        else:
-            st.info("수량이 입력된 자산이 없습니다. 자산 편집에서 수량을 먼저 입력해주세요.")
-
-    st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
     st.markdown(f'<div class="total-num">{total:,.0f}원</div>', unsafe_allow_html=True)
+    st.markdown('<div class="total-lbl">총 자산</div>', unsafe_allow_html=True)
 
     # ── Asset cards ──────────────────────────────────────────────────────
     assets = st.session_state["assets"]
@@ -674,9 +361,7 @@ if page == PAGES[0]:
     for i, asset in enumerate(assets):
         krw     = holdings.get(asset, 0.0)
         color   = icon_color(i)
-        pct     = krw / total * 100 if total > 0 else 0
-        pct_str = f"{pct:.1f}%"
-        bar_w   = min(pct, 100)
+        pct_str = f"{krw / total * 100:.1f}%" if total > 0 else "0%"
         atype   = st.session_state.get(f"type_{asset}", "투자")
 
         if atype == "현금":
@@ -696,11 +381,6 @@ if page == PAGES[0]:
     <div class="asset-name">{asset}</div>
     <div class="asset-detail">{detail_str}</div>
   </div>
-  <div style="width:60px;margin:0 14px">
-    <div style="width:60px;height:3px;background:#1E2740;border-radius:99px;overflow:hidden">
-      <div style="width:{bar_w:.1f}%;height:100%;background:linear-gradient(90deg,#4F8EFF,#00D4AA);border-radius:99px"></div>
-    </div>
-  </div>
   <div>
     <div class="asset-krw">{krw:,.0f}원</div>
     <div class="asset-pct">{pct_str}</div>
@@ -709,47 +389,8 @@ if page == PAGES[0]:
     html += '</div>'
     st.markdown(html, unsafe_allow_html=True)
 
-    # ── 최신 뉴스 ─────────────────────────────────────────────────────────
-    st.markdown('<div class="news-section-hd">종목별 최신 뉴스</div>', unsafe_allow_html=True)
-    has_news = False
-    for asset in assets:
-        ticker = TICKER_MAP.get(asset)
-        if not ticker:
-            continue
-        news_list = fetch_news(ticker)
-        if not news_list:
-            continue
-        has_news = True
-        color = icon_color(assets.index(asset))
-        st.markdown(
-            f'<div class="news-asset-hd">'
-            f'<div style="width:8px;height:8px;border-radius:50%;background:{color};flex-shrink:0"></div>'
-            f'{asset}'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-        news_html = ""
-        for item in news_list:
-            title    = item.get("title", "")
-            link     = item.get("link", "#")
-            pub      = item.get("publisher", "")
-            ts       = item.get("providerPublishTime", 0)
-            time_str = _time_ago(ts) if ts else ""
-            news_html += f"""<a class="news-card" href="{link}" target="_blank" rel="noopener">
-  <div class="news-title">{title}</div>
-  <div class="news-meta">
-    <span>{pub}</span>
-    <span class="news-dot">·</span>
-    <span>{time_str}</span>
-  </div>
-</a>"""
-        st.markdown(news_html, unsafe_allow_html=True)
-
-    if not has_news:
-        st.caption("TICKER_MAP에 등록된 자산의 뉴스를 표시합니다. 자산 이름과 ticker를 코드에서 연결해주세요.")
-
     # ── Edit expander ─────────────────────────────────────────────────────
-    with st.expander("자산 편집"):
+    with st.expander("✏️ 자산 편집"):
         for asset in list(assets):
             atype = st.session_state.get(f"type_{asset}", "투자")
             tc1, tc2 = st.columns([3, 2])
@@ -809,33 +450,15 @@ if page == PAGES[0]:
         with a2:
             st.button("＋ 추가", on_click=add_asset, use_container_width=True)
 
-        # 티커 편집
-        st.markdown("---")
-        st.markdown('<div class="section-hd" style="margin-top:4px">야후 파이낸스 Ticker 설정</div>', unsafe_allow_html=True)
-        st.caption("비어 있으면 시세·뉴스 연동이 안 됩니다. 예) QLD, BTC-USD, SCHD")
-        for asset in list(st.session_state["assets"]):
-            atype = st.session_state.get(f"type_{asset}", "투자")
-            if atype == "현금":
-                continue
-            cur_ticker = TICKER_MAP.get(asset, "")
-            new_ticker = st.text_input(
-                f"{asset} ticker",
-                value=cur_ticker or "",
-                placeholder="예: QLD",
-                key=f"ticker_input_{asset}",
-            )
-            if new_ticker.strip() != (cur_ticker or ""):
-                TICKER_MAP[asset] = new_ticker.strip() or None
-
 # ════════════════════════════════════════════════════════════════════════════
 #  PAGE 2 — 월 투자 배분
 # ════════════════════════════════════════════════════════════════════════════
 elif page == PAGES[1]:
-    st.markdown('<h1 style="color:#CDD6F4;font-size:24px;font-weight:700;margin:0 0 20px;letter-spacing:-0.8px">이번 달 투자금 배분</h1>', unsafe_allow_html=True)
+    st.header("💰 이번 달 투자금 배분")
     assets = st.session_state["assets"]
 
     # Target ratio + priority inputs
-    st.subheader("목표 비율 & 투자 우선순위")
+    st.subheader("🎯 목표 비율 & 투자 우선순위")
     st.caption("우선순위: 숫자가 낮을수록 먼저 채웁니다. 예산이 부족할 때 순서대로 배분됩니다.")
     hc1, hc2, hc3 = st.columns([3, 2, 1])
     hc1.markdown("**자산**")
@@ -885,7 +508,7 @@ elif page == PAGES[1]:
             )
 
     st.markdown("---")
-    st.subheader("투자금 배분 계산")
+    st.subheader("📥 투자금 배분 계산")
     budget = st.number_input("이번 달 투자 금액 (원)", min_value=0.0,
                              step=100_000.0, format="%.0f",
                              key="monthly_budget")
@@ -932,7 +555,7 @@ elif page == PAGES[1]:
 #  PAGE 3 — 리밸런싱
 # ════════════════════════════════════════════════════════════════════════════
 elif page == PAGES[2]:
-    st.markdown('<h1 style="color:#CDD6F4;font-size:24px;font-weight:700;margin:0 0 4px;letter-spacing:-0.8px">정기 리밸런싱 계산기</h1>', unsafe_allow_html=True)
+    st.header("⚖️ 정기 리밸런싱 계산기")
     st.caption("현재 포트폴리오를 목표 비율로 맞추기 위한 매수/매도 금액을 계산합니다.")
 
     holdings = all_krw()
@@ -971,14 +594,14 @@ elif page == PAGES[2]:
 
         def color_rebalance(val):
             if isinstance(val, (int, float)):
-                if val > 500:   return "color: #22D97B"   # 매수 → 민트 그린
-                if val < -500:  return "color: #F04060"   # 매도 → 레드
+                if val > 500:   return "color: #27ae60"   # 매수 → 녹색
+                if val < -500:  return "color: #e74c3c"   # 매도 → 빨강
             return ""
 
         def color_shares(val):
             if isinstance(val, str):
-                if val.startswith("+"):  return "color: #F04060"
-                if val.startswith("-") and val != "-":  return "color: #22D97B"
+                if val.startswith("+"):  return "color: #e74c3c"
+                if val.startswith("-") and val != "-":  return "color: #27ae60"
             return ""
 
         st.dataframe(
@@ -1018,7 +641,7 @@ elif page == PAGES[2]:
 #  PAGE 4 — 미래 수익 예측
 # ════════════════════════════════════════════════════════════════════════════
 elif page == PAGES[3]:
-    st.markdown('<h1 style="color:#CDD6F4;font-size:24px;font-weight:700;margin:0 0 4px;letter-spacing:-0.8px">미래 수익 예측</h1>', unsafe_allow_html=True)
+    st.header("📈 미래 수익 예측")
     st.caption("현재 자산 기준으로 최대 10년 뒤 예상 자산을 시뮬레이션합니다.")
 
     holdings = all_krw()
@@ -1034,7 +657,7 @@ elif page == PAGES[3]:
         ) * 10_000
 
     st.markdown("---")
-    st.subheader("시나리오별 연간 수익률 설정")
+    st.subheader("📊 시나리오별 연간 수익률 설정")
 
     sc1, sc2, sc3 = st.columns(3)
     with sc1:
@@ -1062,15 +685,15 @@ elif page == PAGES[3]:
 
     year_labels = [f"{y}년" for y in range(years + 1)]
 
-    FORECAST_COLORS = [
-        ("#4F8EFF", "rgba(79,142,255,0.08)"),
-        ("#00D4AA", "rgba(0,212,170,0.08)"),
-        ("#FFB547", "rgba(255,181,71,0.08)"),
+    CHART_COLORS = [
+        ("#197BBD", "rgba(25,123,189,0.08)"),
+        ("#27AE60", "rgba(39,174,96,0.08)"),
+        ("#F4A322", "rgba(244,163,34,0.08)"),
     ]
 
     fig = go.Figure()
     for (name, values), (line_color, fill_color) in zip(
-        [(sc_name1, v1), (sc_name2, v2), (sc_name3, v3)], FORECAST_COLORS
+        [(sc_name1, v1), (sc_name2, v2), (sc_name3, v3)], CHART_COLORS
     ):
         fig.add_trace(go.Scatter(
             name=name,
@@ -1079,7 +702,7 @@ elif page == PAGES[3]:
             mode="lines+markers",
             line=dict(shape="spline", smoothing=1.3, width=2.5, color=line_color),
             marker=dict(size=7, color=line_color,
-                        line=dict(color="#080B12", width=2)),
+                        line=dict(color="#FFFFFF", width=2)),
             fill="tozeroy",
             fillcolor=fill_color,
             hovertemplate=f"<b>{name}</b><br>%{{x}}: %{{y:,.0f}}원<extra></extra>",
@@ -1087,11 +710,11 @@ elif page == PAGES[3]:
 
     fig.update_layout(
         title="연도별 예상 자산",
-        title_font=dict(size=15, color="#CDD6F4"),
+        title_font=dict(size=15, color="#404040"),
         xaxis_title="기간",
         yaxis_title="자산 (원)",
         legend=dict(
-            bgcolor="#161C2D", bordercolor="#1E2740", borderwidth=1,
+            bgcolor="#FFFFFF", bordercolor="#EBEBEB", borderwidth=1,
             orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
         ),
         height=480,
@@ -1099,12 +722,12 @@ elif page == PAGES[3]:
         transition=dict(duration=600, easing="cubic-in-out"),
         **_DARK,
     )
-    fig.update_xaxes(gridcolor="#1E2740", showline=False, zeroline=False)
-    fig.update_yaxes(gridcolor="#1E2740", showline=False, zeroline=False, tickformat=",d")
+    fig.update_xaxes(gridcolor="#F0F0F0", showline=False, zeroline=False)
+    fig.update_yaxes(gridcolor="#F0F0F0", showline=False, zeroline=False, tickformat=",d")
     st.plotly_chart(fig, use_container_width=True, key="chart_tab4_forecast")
 
     # Summary table
-    st.subheader("연도별 요약")
+    st.subheader("📋 연도별 요약")
     df_summary = pd.DataFrame([{
         "기간":               f"{y}년",
         f"{sc_name1} (원)":  v1[y],
