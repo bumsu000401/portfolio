@@ -547,9 +547,9 @@ with tab4:
         st.metric("현재 총 자산", f"{total:,.0f}원")
     with fc2:
         monthly_add = st.number_input(
-            "월 추가 투자금 (원)", min_value=0.0, step=10_000.0,
+            "월 추가 투자금 (만원)", min_value=0.0, step=1.0,
             format="%.0f", key="future_monthly",
-        )
+        ) * 10_000
 
     st.markdown("---")
     st.subheader("📊 시나리오별 연간 수익률 설정")
