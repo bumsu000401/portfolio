@@ -327,7 +327,7 @@ def make_pie(labels, values, title):
     ))
     fig.update_layout(
         title_text=title, title_x=0.5,
-        title_font=dict(size=14, color="#404040"),
+        title_font=dict(size=14, color="#2c2c2e"),
         margin=dict(t=50, b=20, l=20, r=20),
         height=370, showlegend=False,
         transition=dict(duration=500, easing="cubic-in-out"),
@@ -709,7 +709,7 @@ elif page == PAGES[3]:
 
     year_labels = [f"{y}년" for y in range(years + 1)]
 
-    CHART_COLORS = [
+    FORECAST_COLORS = [
         ("#197BBD", "rgba(25,123,189,0.08)"),
         ("#27AE60", "rgba(39,174,96,0.08)"),
         ("#F4A322", "rgba(244,163,34,0.08)"),
@@ -717,7 +717,7 @@ elif page == PAGES[3]:
 
     fig = go.Figure()
     for (name, values), (line_color, fill_color) in zip(
-        [(sc_name1, v1), (sc_name2, v2), (sc_name3, v3)], CHART_COLORS
+        [(sc_name1, v1), (sc_name2, v2), (sc_name3, v3)], FORECAST_COLORS
     ):
         fig.add_trace(go.Scatter(
             name=name,
@@ -734,7 +734,7 @@ elif page == PAGES[3]:
 
     fig.update_layout(
         title="연도별 예상 자산",
-        title_font=dict(size=15, color="#404040"),
+        title_font=dict(size=15, color="#2c2c2e"),
         xaxis_title="기간",
         yaxis_title="자산 (원)",
         legend=dict(
