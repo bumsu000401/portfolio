@@ -122,7 +122,7 @@ html, body, [class*="css"] { font-family: 'Outfit', sans-serif !important; }
 .asset-pct    { font-size: 11px; color: #8e8e93; text-align: right; margin-top: 2px; }
 
 .total-num  { font-size: 40px; font-weight: 500; color: #2c2c2e; letter-spacing: -1px; margin: 6px 0 2px; font-family: 'IBM Plex Mono', monospace; }
-.total-lbl  { font-size: 11px; color: #8e8e93; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500; }
+.total-lbl  { font-size: 11px; color: #8e8e93; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500; }
 .section-hd { font-size: 11px; font-weight: 600; color: #8e8e93; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 1.5px; padding-bottom: 8px; border-bottom: 1px solid #e5e5ea; }
 .quote-subtitle { font-size: 12px !important; color: #8e8e93 !important; font-style: italic !important; margin: 0 0 20px !important; }
 </style>
@@ -147,6 +147,7 @@ CHART_COLORS = [
     "#8E44AD", "#2EACDE", "#F39C12", "#16A085",
     "#D35400", "#2980B9",
 ]
+
 DEFAULTS = {
     "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 1},
     "Bitcoin": {"qty": 0.0, "price": 0.0, "ratio": 15.0, "priority": 2},
@@ -738,7 +739,7 @@ elif page == PAGES[3]:
         xaxis_title="기간",
         yaxis_title="자산 (원)",
         legend=dict(
-            bgcolor="#ffffff", bordercolor="#EBEBEB", borderwidth=1,
+            bgcolor="#ffffff", bordercolor="#e5e5ea", borderwidth=1,
             orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
         ),
         height=480,
