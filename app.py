@@ -13,165 +13,248 @@ st.set_page_config(
 # ─── CSS — iOS Light Mode ─────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* ── iOS system font ── */
+/* ══════════════════════════════════════════════
+   FONT — SF Pro (Apple system)
+   ══════════════════════════════════════════════ */
 * { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
     "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important; }
 
-/* ── iOS backgrounds ── */
-/* systemGroupedBackground: #F2F2F7 */
-[data-testid="stAppViewContainer"] { background-color: #F2F2F7; }
-[data-testid="stHeader"]           { background-color: #F2F2F7; }
-[data-testid="stSidebar"]          { background-color: #F2F2F7;
-                                     border-right: 1px solid #C6C6C8; }
+/* ══════════════════════════════════════════════
+   BACKGROUNDS
+   ══════════════════════════════════════════════ */
+[data-testid="stAppViewContainer"] {
+    background: linear-gradient(160deg, #F0F2FF 0%, #F5F5F7 40%, #F5F0FF 100%);
+    min-height: 100vh;
+}
+[data-testid="stHeader"] { background: transparent; }
 
-/* Fix padding under Streamlit Cloud top bar */
 .block-container { padding-top: 2rem !important; }
 
-/* ── Sidebar ── */
-[data-testid="stSidebar"] .stRadio > div { gap: 2px; }
+/* ══════════════════════════════════════════════
+   SIDEBAR
+   ══════════════════════════════════════════════ */
+[data-testid="stSidebar"] {
+    background: rgba(255,255,255,0.75) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(0,0,0,0.07);
+}
+
+[data-testid="stSidebar"] .stRadio > div { gap: 3px; }
 [data-testid="stSidebar"] .stRadio > div > label {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 400;
-    color: #000000;
+    padding: 13px 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #3A3A3C;
     cursor: pointer;
-    transition: background 0.12s;
+    transition: background 0.15s, color 0.15s;
 }
 [data-testid="stSidebar"] .stRadio > div > label:hover {
-    background: rgba(0,122,255,0.08);
+    background: rgba(110,106,219,0.08);
 }
 [data-testid="stSidebar"] .stRadio > div > label[data-checked="true"] {
-    background: rgba(0,122,255,0.12);
-    color: #007AFF;
-    font-weight: 600;
+    background: linear-gradient(135deg, rgba(110,106,219,0.15), rgba(90,200,250,0.10));
+    color: #5856D6;
+    font-weight: 700;
 }
-/* Radio circle color → iOS blue */
-[data-testid="stSidebar"] .stRadio input[type="radio"]:checked {
-    accent-color: #007AFF;
+[data-testid="stSidebar"] .stRadio input[type="radio"] { accent-color: #5856D6; }
+
+/* ── Fix: sidebar toggle button — do NOT override ── */
+[data-testid="stSidebar"] button,
+[data-testid="collapsedControl"] button {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #3A3A3C !important;
+    padding: 4px !important;
 }
 
-/* ── Expander — iOS grouped card ── */
+/* ══════════════════════════════════════════════
+   CARDS (glass morphism)
+   ══════════════════════════════════════════════ */
+.glass-card {
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 4px 24px rgba(88,86,214,0.07),
+                0 1px 4px rgba(0,0,0,0.05);
+    padding: 24px;
+    margin-bottom: 16px;
+}
+
+/* ══════════════════════════════════════════════
+   EXPANDER
+   ══════════════════════════════════════════════ */
 [data-testid="stExpander"] {
-    background-color: #FFFFFF;
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 [data-testid="stExpander"] summary {
     font-weight: 600;
     font-size: 15px;
-    color: #000000;
+    color: #1D1D1F;
+    padding: 14px 18px;
 }
 
-/* ── Inputs — iOS style ── */
+/* ══════════════════════════════════════════════
+   INPUTS
+   ══════════════════════════════════════════════ */
 [data-testid="stNumberInput"] input,
 [data-testid="stTextInput"] input {
-    background-color: #FFFFFF;
-    color: #000000;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 0 0 1px #C6C6C8;
-    padding: 10px 12px;
-    font-size: 15px;
+    background: rgba(255,255,255,0.9) !important;
+    color: #1D1D1F !important;
+    border: 1.5px solid #E5E5EA !important;
+    border-radius: 12px !important;
+    padding: 10px 14px !important;
+    font-size: 15px !important;
+    transition: border-color 0.15s, box-shadow 0.15s;
 }
 [data-testid="stNumberInput"] input:focus,
 [data-testid="stTextInput"] input:focus {
-    box-shadow: 0 0 0 2px #007AFF !important;
-    outline: none;
+    border-color: #5856D6 !important;
+    box-shadow: 0 0 0 3px rgba(88,86,214,0.15) !important;
+    outline: none !important;
 }
 
-/* ── Metric — iOS stat tile ── */
+/* ══════════════════════════════════════════════
+   METRIC TILES
+   ══════════════════════════════════════════════ */
 [data-testid="stMetric"] {
-    background-color: #FFFFFF;
-    border-radius: 12px;
-    padding: 14px 18px;
-    border: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 16px;
+    padding: 18px 20px;
+    border: 1px solid rgba(255,255,255,0.7);
+    box-shadow: 0 2px 12px rgba(88,86,214,0.08);
 }
 [data-testid="stMetricLabel"] {
-    color: #6C6C70 !important;
-    font-size: 12px !important;
-    font-weight: 500 !important;
+    color: #86868B !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.6px;
 }
 [data-testid="stMetricValue"] {
-    color: #000000 !important;
-    font-size: 22px !important;
+    color: #1D1D1F !important;
+    font-size: 24px !important;
     font-weight: 700 !important;
     letter-spacing: -0.5px;
 }
 
-/* ── Dataframe ── */
+/* ══════════════════════════════════════════════
+   DATAFRAME
+   ══════════════════════════════════════════════ */
 [data-testid="stDataFrame"] {
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    border: 1px solid rgba(255,255,255,0.5);
 }
 
-/* ── Slider ── */
-[data-testid="stSlider"] [role="slider"] { background: #007AFF !important; }
-[data-testid="stSlider"] [data-testid="stSliderThumb"] { background: #007AFF !important; }
+/* ══════════════════════════════════════════════
+   SLIDER
+   ══════════════════════════════════════════════ */
+[data-testid="stSlider"] [role="slider"] { background: #5856D6 !important; }
 
-/* ── Buttons ── */
-[data-testid="stButton"] > button {
-    background-color: #007AFF;
+/* ══════════════════════════════════════════════
+   BUTTONS — only app-level buttons, NOT system UI
+   ══════════════════════════════════════════════ */
+[data-testid="stMain"] [data-testid="stButton"] > button {
+    background: linear-gradient(135deg, #5856D6, #007AFF);
     color: #ffffff;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-weight: 600;
     font-size: 15px;
-    padding: 10px 20px;
-    transition: opacity 0.15s;
+    padding: 10px 22px;
+    transition: opacity 0.15s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(88,86,214,0.3);
 }
-[data-testid="stButton"] > button:hover { opacity: 0.85; background-color: #007AFF; }
+[data-testid="stMain"] [data-testid="stButton"] > button:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+[data-testid="stMain"] [data-testid="stButton"] > button:active {
+    transform: translateY(0);
+}
 
-/* ── Alert / info boxes ── */
-[data-testid="stAlert"] { border-radius: 12px; border: none; }
+/* ══════════════════════════════════════════════
+   ALERTS
+   ══════════════════════════════════════════════ */
+[data-testid="stAlert"] {
+    border-radius: 14px;
+    border: none;
+    backdrop-filter: blur(8px);
+}
 
-/* ── Asset card styles ── */
+/* ══════════════════════════════════════════════
+   ASSET CARDS
+   ══════════════════════════════════════════════ */
 .asset-card-wrap {
-    background: #FFFFFF;
-    border-radius: 16px;
-    padding: 0 18px;
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    padding: 0 20px;
     margin: 8px 0 20px 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 4px 24px rgba(88,86,214,0.07), 0 1px 4px rgba(0,0,0,0.04);
 }
 .asset-row {
     display: flex;
     align-items: center;
-    padding: 14px 0;
-    border-bottom: 1px solid #F2F2F7;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 .asset-row:last-child { border-bottom: none; }
 
 .asset-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;     /* iOS app icon shape */
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 800;
     color: white;
     flex-shrink: 0;
-    margin-right: 14px;
+    margin-right: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18);
 }
-.asset-name   { font-size: 16px; font-weight: 600; color: #000000; }
-.asset-detail { font-size: 13px; color: #6C6C70; margin-top: 2px; }
-.asset-krw    { font-size: 16px; font-weight: 500; color: #000000; text-align: right; }
-.asset-pct    { font-size: 12px; color: #6C6C70; text-align: right; margin-top: 2px; }
+.asset-name   { font-size: 16px; font-weight: 600; color: #1D1D1F; }
+.asset-detail { font-size: 13px; color: #86868B; margin-top: 2px; }
+.asset-krw    { font-size: 16px; font-weight: 600; color: #1D1D1F; text-align: right; }
+.asset-pct    { font-size: 12px; color: #86868B; text-align: right; margin-top: 2px; }
 
-.total-num  { font-size: 40px; font-weight: 700; color: #000000;
-              letter-spacing: -1.5px; margin: 8px 0 2px; }
-.total-lbl  { font-size: 13px; color: #6C6C70; margin-bottom: 20px; font-weight: 400; }
-.section-hd { font-size: 20px; font-weight: 700; color: #000000;
-              margin: 24px 0 10px; letter-spacing: -0.3px; }
+/* ══════════════════════════════════════════════
+   HERO — 총 자산
+   ══════════════════════════════════════════════ */
+.total-num {
+    font-size: 42px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #5856D6 0%, #007AFF 60%, #5AC8FA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -2px;
+    margin: 10px 0 4px;
+    line-height: 1.1;
+}
+.total-lbl  { font-size: 13px; color: #86868B; margin-bottom: 22px; font-weight: 500; }
+.section-hd { font-size: 19px; font-weight: 700; color: #1D1D1F;
+              margin: 24px 0 12px; letter-spacing: -0.3px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -318,12 +401,16 @@ PAGES = ["💼 포트폴리오", "💰 월 투자 배분", "⚖️ 리밸런싱"
 
 with st.sidebar:
     st.markdown(
-        "<div style='padding:8px 4px 16px;font-size:22px;font-weight:700;"
-        "color:#000;letter-spacing:-0.5px'>📈 포트폴리오</div>",
+        "<div style='padding:16px 4px 4px;font-size:22px;font-weight:800;"
+        "background:linear-gradient(135deg,#5856D6,#007AFF);-webkit-background-clip:text;"
+        "-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px'>"
+        "📈 포트폴리오</div>",
         unsafe_allow_html=True,
     )
     st.markdown(
-        "<hr style='border:none;border-top:1px solid #C6C6C8;margin:0 0 12px'>",
+        "<p style='font-size:12px;color:#86868B;padding:2px 4px 14px;margin:0;"
+        "font-weight:500'>내 투자 현황</p>"
+        "<hr style='border:none;border-top:1px solid rgba(0,0,0,0.07);margin:0 0 14px'>",
         unsafe_allow_html=True,
     )
     page = st.radio("페이지", PAGES, label_visibility="collapsed")
