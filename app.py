@@ -10,259 +10,110 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── CSS — iOS Light Mode ─────────────────────────────────────────────────────
+# ─── CSS — light card UI ─────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* ══════════════════════════════════════════════
-   FONT — SF Pro (Apple system)
-   ══════════════════════════════════════════════ */
-* { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-    "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important; }
+/* White background */
+[data-testid="stAppViewContainer"] { background-color: #f5f6fa; }
+[data-testid="stHeader"]           { background-color: #f5f6fa; }
+[data-testid="stSidebar"]          { background-color: #ffffff; }
 
-/* ══════════════════════════════════════════════
-   BACKGROUNDS
-   ══════════════════════════════════════════════ */
-[data-testid="stAppViewContainer"] {
-    background: linear-gradient(160deg, #F0F2FF 0%, #F5F5F7 40%, #F5F0FF 100%);
-    min-height: 100vh;
-}
-[data-testid="stHeader"] { background: transparent; }
+/* Fix tab clipping under Streamlit Cloud top bar */
+.block-container { padding-top: 3rem !important; }
 
-.block-container { padding-top: 2rem !important; }
-
-/* ══════════════════════════════════════════════
-   SIDEBAR
-   ══════════════════════════════════════════════ */
-[data-testid="stSidebar"] {
-    background: rgba(255,255,255,0.75) !important;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(0,0,0,0.07);
-}
-
-[data-testid="stSidebar"] .stRadio > div { gap: 3px; }
+/* Sidebar nav radio */
+[data-testid="stSidebar"] .stRadio > div { gap: 4px; }
 [data-testid="stSidebar"] .stRadio > div > label {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 13px 16px;
-    border-radius: 12px;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
     font-size: 15px;
     font-weight: 500;
-    color: #3A3A3C;
+    color: #555555;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s;
 }
-[data-testid="stSidebar"] .stRadio > div > label:hover {
-    background: rgba(110,106,219,0.08);
-}
+[data-testid="stSidebar"] .stRadio > div > label:hover { background: #f0f2f8; }
 [data-testid="stSidebar"] .stRadio > div > label[data-checked="true"] {
-    background: linear-gradient(135deg, rgba(110,106,219,0.15), rgba(90,200,250,0.10));
-    color: #5856D6;
-    font-weight: 700;
-}
-[data-testid="stSidebar"] .stRadio input[type="radio"] { accent-color: #5856D6; }
-
-/* ── Fix: sidebar toggle button — do NOT override ── */
-[data-testid="stSidebar"] button,
-[data-testid="collapsedControl"] button {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: #3A3A3C !important;
-    padding: 4px !important;
-}
-
-/* ══════════════════════════════════════════════
-   CARDS (glass morphism)
-   ══════════════════════════════════════════════ */
-.glass-card {
-    background: rgba(255,255,255,0.78);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.6);
-    box-shadow: 0 4px 24px rgba(88,86,214,0.07),
-                0 1px 4px rgba(0,0,0,0.05);
-    padding: 24px;
-    margin-bottom: 16px;
-}
-
-/* ══════════════════════════════════════════════
-   EXPANDER
-   ══════════════════════════════════════════════ */
-[data-testid="stExpander"] {
-    background: rgba(255,255,255,0.75);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.6) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-}
-[data-testid="stExpander"] summary {
+    background: #e8edf8;
+    color: #1a1a1a;
     font-weight: 600;
-    font-size: 15px;
-    color: #1D1D1F;
-    padding: 14px 18px;
 }
 
-/* ══════════════════════════════════════════════
-   INPUTS
-   ══════════════════════════════════════════════ */
+/* Expander */
+[data-testid="stExpander"] {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+/* Inputs */
 [data-testid="stNumberInput"] input,
 [data-testid="stTextInput"] input {
-    background: rgba(255,255,255,0.9) !important;
-    color: #1D1D1F !important;
-    border: 1.5px solid #E5E5EA !important;
-    border-radius: 12px !important;
-    padding: 10px 14px !important;
-    font-size: 15px !important;
-    transition: border-color 0.15s, box-shadow 0.15s;
-}
-[data-testid="stNumberInput"] input:focus,
-[data-testid="stTextInput"] input:focus {
-    border-color: #5856D6 !important;
-    box-shadow: 0 0 0 3px rgba(88,86,214,0.15) !important;
-    outline: none !important;
+    background-color: #ffffff;
+    color: #1a1a1a;
+    border: 1px solid #d0d0d0;
 }
 
-/* ══════════════════════════════════════════════
-   METRIC TILES
-   ══════════════════════════════════════════════ */
+/* Metric */
 [data-testid="stMetric"] {
-    background: rgba(255,255,255,0.78);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 16px;
-    padding: 18px 20px;
-    border: 1px solid rgba(255,255,255,0.7);
-    box-shadow: 0 2px 12px rgba(88,86,214,0.08);
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 12px 16px;
+    border: 1px solid #e8e8e8;
 }
-[data-testid="stMetricLabel"] {
-    color: #86868B !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-}
-[data-testid="stMetricValue"] {
-    color: #1D1D1F !important;
-    font-size: 24px !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.5px;
-}
+[data-testid="stMetricLabel"] { color: #888888 !important; font-size: 13px; }
+[data-testid="stMetricValue"] { color: #1a1a1a !important; }
 
-/* ══════════════════════════════════════════════
-   DATAFRAME
-   ══════════════════════════════════════════════ */
-[data-testid="stDataFrame"] {
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-    border: 1px solid rgba(255,255,255,0.5);
-}
+/* Dataframe */
+[data-testid="stDataFrame"] { border-radius: 10px; overflow: hidden; }
 
-/* ══════════════════════════════════════════════
-   SLIDER
-   ══════════════════════════════════════════════ */
-[data-testid="stSlider"] [role="slider"] { background: #5856D6 !important; }
-
-/* ══════════════════════════════════════════════
-   BUTTONS — only app-level buttons, NOT system UI
-   ══════════════════════════════════════════════ */
-[data-testid="stMain"] [data-testid="stButton"] > button {
-    background: linear-gradient(135deg, #5856D6, #007AFF);
-    color: #ffffff;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 15px;
-    padding: 10px 22px;
-    transition: opacity 0.15s, transform 0.1s;
-    box-shadow: 0 2px 8px rgba(88,86,214,0.3);
-}
-[data-testid="stMain"] [data-testid="stButton"] > button:hover {
-    opacity: 0.88;
-    transform: translateY(-1px);
-}
-[data-testid="stMain"] [data-testid="stButton"] > button:active {
-    transform: translateY(0);
-}
-
-/* ══════════════════════════════════════════════
-   ALERTS
-   ══════════════════════════════════════════════ */
-[data-testid="stAlert"] {
-    border-radius: 14px;
-    border: none;
-    backdrop-filter: blur(8px);
-}
-
-/* ══════════════════════════════════════════════
-   ASSET CARDS
-   ══════════════════════════════════════════════ */
+/* ── Asset card styles ── */
 .asset-card-wrap {
-    background: rgba(255,255,255,0.78);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 20px;
-    padding: 0 20px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 0 18px;
     margin: 8px 0 20px 0;
-    border: 1px solid rgba(255,255,255,0.6);
-    box-shadow: 0 4px 24px rgba(88,86,214,0.07), 0 1px 4px rgba(0,0,0,0.04);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
 }
 .asset-row {
     display: flex;
     align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f0f0;
 }
 .asset-row:last-child { border-bottom: none; }
 
 .asset-icon {
     width: 46px;
     height: 46px;
-    border-radius: 13px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    font-weight: 800;
+    font-size: 18px;
+    font-weight: 700;
     color: white;
     flex-shrink: 0;
-    margin-right: 15px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    margin-right: 14px;
 }
-.asset-name   { font-size: 16px; font-weight: 600; color: #1D1D1F; }
-.asset-detail { font-size: 13px; color: #86868B; margin-top: 2px; }
-.asset-krw    { font-size: 16px; font-weight: 600; color: #1D1D1F; text-align: right; }
-.asset-pct    { font-size: 12px; color: #86868B; text-align: right; margin-top: 2px; }
+.asset-name   { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+.asset-detail { font-size: 13px; color: #888; margin-top: 3px; }
+.asset-krw    { font-size: 16px; font-weight: 500; color: #1a1a1a; text-align: right; }
 
-/* ══════════════════════════════════════════════
-   HERO — 총 자산
-   ══════════════════════════════════════════════ */
-.total-num {
-    font-size: 42px;
-    font-weight: 800;
-    background: linear-gradient(135deg, #5856D6 0%, #007AFF 60%, #5AC8FA 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -2px;
-    margin: 10px 0 4px;
-    line-height: 1.1;
-}
-.total-lbl  { font-size: 13px; color: #86868B; margin-bottom: 22px; font-weight: 500; }
-.section-hd { font-size: 19px; font-weight: 700; color: #1D1D1F;
-              margin: 24px 0 12px; letter-spacing: -0.3px; }
+.total-num  { font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: -1px; margin: 6px 0 2px; }
+.total-lbl  { font-size: 13px; color: #888; margin-bottom: 20px; }
+.section-hd { font-size: 18px; font-weight: 600; color: #1a1a1a; margin: 20px 0 10px; }
 </style>
 """, unsafe_allow_html=True)
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 ICON_COLORS = [
-    "#007AFF", "#FF3B30", "#FF9500", "#34C759",
-    "#AF52DE", "#FF2D55", "#5AC8FA", "#FFCC00",
-    "#00C7BE", "#30B0C7",
+    "#4e9af1", "#ff6b6b", "#f7b731", "#26de81",
+    "#a55eea", "#fd9644", "#45aaf2", "#fc5c65",
+    "#2bcbba", "#eb3b5a",
 ]
 DEFAULTS = {
     "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 1},
@@ -378,8 +229,8 @@ def project_portfolio(initial: float, monthly: float,
     return values
 
 # ─── Chart helpers ────────────────────────────────────────────────────────────
-_DARK = dict(paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
-             font=dict(color="#000000", family="-apple-system, BlinkMacSystemFont, Helvetica Neue, Arial"))
+_DARK = dict(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+             font=dict(color="#1a1a1a"))
 
 
 def make_pie(labels, values, title):
@@ -400,19 +251,8 @@ def make_pie(labels, values, title):
 PAGES = ["💼 포트폴리오", "💰 월 투자 배분", "⚖️ 리밸런싱", "📈 미래 예측"]
 
 with st.sidebar:
-    st.markdown(
-        "<div style='padding:16px 4px 4px;font-size:22px;font-weight:800;"
-        "background:linear-gradient(135deg,#5856D6,#007AFF);-webkit-background-clip:text;"
-        "-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px'>"
-        "📈 포트폴리오</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        "<p style='font-size:12px;color:#86868B;padding:2px 4px 14px;margin:0;"
-        "font-weight:500'>내 투자 현황</p>"
-        "<hr style='border:none;border-top:1px solid rgba(0,0,0,0.07);margin:0 0 14px'>",
-        unsafe_allow_html=True,
-    )
+    st.markdown("### 📈 포트폴리오")
+    st.markdown("---")
     page = st.radio("페이지", PAGES, label_visibility="collapsed")
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -461,7 +301,7 @@ if page == PAGES[0]:
   </div>
   <div>
     <div class="asset-krw">{krw:,.0f}원</div>
-    <div class="asset-pct">{pct_str}</div>
+    <div style="font-size:12px;color:#777;text-align:right">{pct_str}</div>
   </div>
 </div>"""
     html += '</div>'
