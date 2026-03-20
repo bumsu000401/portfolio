@@ -339,7 +339,7 @@ with tab1:
             atype = st.session_state.get(f"type_{asset}", "투자")  # re-read after radio
 
             if atype == "현금":
-                cc1, cc2, cc3 = st.columns([3, 2, 0.7])
+                cc1, cc2, cc3 = st.columns([3, 2, 0.7], vertical_alignment="bottom")
                 with cc1:
                     cur_now = st.session_state.get(f"cur_{asset}", "KRW")
                     label = "금액 (달러)" if cur_now == "USD" else "금액 (원)"
@@ -352,7 +352,6 @@ with tab1:
                                  key=f"cur_{asset}",
                                  label_visibility="collapsed")
                 with cc3:
-                    st.write("")
                     st.button("🗑️", key=f"del_{asset}",
                               on_click=delete_asset, args=(asset,))
             else:
