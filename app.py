@@ -114,14 +114,17 @@ ICON_COLORS = [
     "#2bcbba", "#eb3b5a",
 ]
 DEFAULTS = {
-    "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0},
-    "SCHD":    {"qty": 0.0, "price": 0.0, "ratio": 30.0},
-    "Bitcoin": {"qty": 0.0, "price": 0.0, "ratio": 15.0},
+    "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 1},
+    "Bitcoin": {"qty": 0.0, "price": 0.0, "ratio": 15.0, "priority": 2},
+    "SCHD":    {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 3},
+    "원화":    {"qty": 0.0, "price": 0.0, "ratio": 15.0, "priority": 4, "asset_type": "현금"},
+    "달러":    {"qty": 0.0, "price": 0.0, "ratio": 10.0, "priority": 4, "asset_type": "현금"},
 }
 
 # ─── Session state ─────────────────────────────────────────────────────────────
 if "assets" not in st.session_state:
     st.session_state["assets"] = list(DEFAULTS.keys())
+
 
 if "new_asset_name" not in st.session_state:
     st.session_state["new_asset_name"] = ""
@@ -138,7 +141,9 @@ def _init_asset(name: str, qty=0.0, price=0.0, ratio=0.0, asset_type="투자", p
 
 
 for asset, d in DEFAULTS.items():
-    _init_asset(asset, **d)
+    _init_asset(asset, qty=d.get("qty", 0.0), price=d.get("price", 0.0),
+                ratio=d.get("ratio", 0.0), priority=d.get("priority", 99),
+                asset_type=d.get("asset_type", "투자"))
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 def get_krw(asset: str) -> float:
