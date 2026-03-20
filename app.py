@@ -21,10 +21,12 @@ st.markdown("""
 /* Fix tab clipping under Streamlit Cloud top bar */
 .block-container { padding-top: 3rem !important; }
 
-/* Sidebar nav radio — hide default radio circles */
+/* Sidebar nav radio */
 [data-testid="stSidebar"] .stRadio > div { gap: 4px; }
-[data-testid="stSidebar"] .stRadio label {
-    display: block;
+[data-testid="stSidebar"] .stRadio > div > label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 10px 14px;
     border-radius: 8px;
     font-size: 15px;
@@ -33,9 +35,8 @@ st.markdown("""
     cursor: pointer;
     transition: background 0.15s;
 }
-[data-testid="stSidebar"] .stRadio label:hover { background: #f0f2f8; }
-[data-testid="stSidebar"] .stRadio [data-checked="true"] label,
-[data-testid="stSidebar"] .stRadio input:checked + div label {
+[data-testid="stSidebar"] .stRadio > div > label:hover { background: #f0f2f8; }
+[data-testid="stSidebar"] .stRadio > div > label[data-checked="true"] {
     background: #e8edf8;
     color: #1a1a1a;
     font-weight: 600;
