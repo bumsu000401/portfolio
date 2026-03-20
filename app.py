@@ -414,11 +414,13 @@ with tab2:
             st.plotly_chart(
                 make_pie(assets, [holdings.get(a, 0) for a in assets], "현재 비율"),
                 use_container_width=True,
+                key="pie_tab1_current",
             )
         with pc2:
             st.plotly_chart(
                 make_pie(assets, [ratios.get(a, 0) for a in assets], "목표 비율"),
                 use_container_width=True,
+                key="pie_tab1_target",
             )
 
     st.markdown("---")
@@ -457,6 +459,7 @@ with tab2:
             st.plotly_chart(
                 make_pie(assets, [post.get(a, 0) for a in assets], "투자 후 예상 비율"),
                 use_container_width=True,
+                key="pie_tab1_after",
             )
     elif budget > 0:
         st.warning("목표 비율 합계가 100%가 아닙니다. 위에서 비율을 조정해주세요.")
@@ -540,11 +543,13 @@ with tab3:
             st.plotly_chart(
                 make_pie(assets, [holdings.get(a, 0) for a in assets], "현재 비율"),
                 use_container_width=True,
+                key="pie_tab3_current",
             )
         with rc2:
             st.plotly_chart(
                 make_pie(assets, [ratios.get(a, 0) for a in assets], "목표 비율"),
                 use_container_width=True,
+                key="pie_tab3_target",
             )
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -621,7 +626,7 @@ with tab4:
     )
     fig.update_xaxes(gridcolor="#e8e8e8")
     fig.update_yaxes(gridcolor="#e8e8e8", tickformat=",d")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, key="chart_tab4_forecast")
 
     # Summary table
     st.subheader("📋 연도별 요약")
