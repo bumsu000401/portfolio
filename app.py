@@ -10,110 +10,124 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── CSS — light card UI ─────────────────────────────────────────────────────
+# ─── CSS — Financial Dashboard style ─────────────────────────────────────────
 st.markdown("""
 <style>
-/* White background */
-[data-testid="stAppViewContainer"] { background-color: #f5f6fa; }
-[data-testid="stHeader"]           { background-color: #f5f6fa; }
-[data-testid="stSidebar"]          { background-color: #ffffff; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* Fix tab clipping under Streamlit Cloud top bar */
-.block-container { padding-top: 3rem !important; }
+/* ── Global ── */
+html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
+[data-testid="stAppViewContainer"] { background: #F8FAFC; }
+[data-testid="stHeader"]           { background: transparent !important; }
+.block-container { padding-top: 2.5rem !important; max-width: 1080px; }
 
-/* Sidebar nav radio */
+/* ── Sidebar — dark navy ── */
+[data-testid="stSidebar"] { background: #0F172A !important; }
+
 [data-testid="stSidebar"] .stRadio > div { gap: 4px; }
 [data-testid="stSidebar"] .stRadio > div > label {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 15px;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: 500;
-    color: #555555;
+    color: #64748B;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: all 0.15s ease;
 }
-[data-testid="stSidebar"] .stRadio > div > label:hover { background: #f0f2f8; }
+/* 라디오 동그라미 숨기기 */
+[data-testid="stSidebar"] .stRadio > div > label > div:first-child { display: none !important; }
+[data-testid="stSidebar"] .stRadio > div > label:hover {
+    background: #1E293B;
+    color: #CBD5E1;
+}
 [data-testid="stSidebar"] .stRadio > div > label[data-checked="true"] {
-    background: #e8edf8;
-    color: #1a1a1a;
+    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+    color: #FFFFFF !important;
     font-weight: 600;
 }
+[data-testid="stSidebar"] h3        { color: #F1F5F9 !important; font-size: 15px !important; letter-spacing: 0.3px; }
+[data-testid="stSidebar"] hr        { border-color: #1E293B !important; margin: 14px 0; }
 
-/* Expander */
-[data-testid="stExpander"] {
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
+/* ── Metric cards ── */
+[data-testid="stMetric"] {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    border: 1px solid #F1F5F9;
 }
+[data-testid="stMetricLabel"] { color: #64748B !important; font-size: 12px !important; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+[data-testid="stMetricValue"] { color: #0F172A !important; font-size: 26px !important; font-weight: 700; letter-spacing: -0.5px; }
 
-/* Inputs */
+/* ── Inputs ── */
 [data-testid="stNumberInput"] input,
 [data-testid="stTextInput"] input {
-    background-color: #ffffff;
-    color: #1a1a1a;
-    border: 1px solid #d0d0d0;
-}
-
-/* Metric */
-[data-testid="stMetric"] {
-    background-color: #ffffff;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
     border-radius: 10px;
-    padding: 12px 16px;
-    border: 1px solid #e8e8e8;
+    color: #1E293B;
+    font-size: 14px;
 }
-[data-testid="stMetricLabel"] { color: #888888 !important; font-size: 13px; }
-[data-testid="stMetricValue"] { color: #1a1a1a !important; }
 
-/* Dataframe */
-[data-testid="stDataFrame"] { border-radius: 10px; overflow: hidden; }
+/* ── Expander ── */
+[data-testid="stExpander"] {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* ── DataFrame ── */
+[data-testid="stDataFrame"] { border-radius: 14px; overflow: hidden; border: 1px solid #E2E8F0; }
 
 /* ── Asset card styles ── */
 .asset-card-wrap {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 0 18px;
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 0 20px;
     margin: 8px 0 20px 0;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    border: 1px solid #F1F5F9;
 }
 .asset-row {
     display: flex;
     align-items: center;
-    padding: 14px 0;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 0;
+    border-bottom: 1px solid #F8FAFC;
 }
 .asset-row:last-child { border-bottom: none; }
-
 .asset-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     color: white;
     flex-shrink: 0;
     margin-right: 14px;
 }
-.asset-name   { font-size: 16px; font-weight: 600; color: #1a1a1a; }
-.asset-detail { font-size: 13px; color: #888; margin-top: 3px; }
-.asset-krw    { font-size: 16px; font-weight: 500; color: #1a1a1a; text-align: right; }
+.asset-name   { font-size: 15px; font-weight: 600; color: #0F172A; }
+.asset-detail { font-size: 12px; color: #94A3B8; margin-top: 2px; }
+.asset-krw    { font-size: 15px; font-weight: 600; color: #0F172A; text-align: right; }
+.asset-pct    { font-size: 12px; color: #94A3B8; text-align: right; margin-top: 2px; }
 
-.total-num  { font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: -1px; margin: 6px 0 2px; }
-.total-lbl  { font-size: 13px; color: #888; margin-bottom: 20px; }
-.section-hd { font-size: 18px; font-weight: 600; color: #1a1a1a; margin: 20px 0 10px; }
+.total-num  { font-size: 44px; font-weight: 800; color: #0F172A; letter-spacing: -2px; margin: 8px 0 4px; }
+.total-lbl  { font-size: 13px; color: #94A3B8; font-weight: 500; margin-bottom: 24px; }
+.section-hd { font-size: 15px; font-weight: 700; color: #0F172A; margin: 24px 0 12px; letter-spacing: -0.2px; text-transform: uppercase; }
 </style>
 """, unsafe_allow_html=True)
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 ICON_COLORS = [
-    "#4e9af1", "#ff6b6b", "#f7b731", "#26de81",
-    "#a55eea", "#fd9644", "#45aaf2", "#fc5c65",
-    "#2bcbba", "#eb3b5a",
+    "#6366F1", "#EC4899", "#F59E0B", "#10B981",
+    "#8B5CF6", "#F97316", "#06B6D4", "#EF4444",
+    "#14B8A6", "#84CC16",
 ]
 DEFAULTS = {
     "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 1},
@@ -229,8 +243,11 @@ def project_portfolio(initial: float, monthly: float,
     return values
 
 # ─── Chart helpers ────────────────────────────────────────────────────────────
-_DARK = dict(paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
-             font=dict(color="#1a1a1a"))
+_DARK = dict(
+    paper_bgcolor="#FFFFFF",
+    plot_bgcolor="#FFFFFF",
+    font=dict(color="#0F172A", family="Inter, sans-serif"),
+)
 
 
 def make_pie(labels, values, title):
@@ -251,7 +268,12 @@ def make_pie(labels, values, title):
 PAGES = ["💼 포트폴리오", "💰 월 투자 배분", "⚖️ 리밸런싱", "📈 미래 예측"]
 
 with st.sidebar:
-    st.markdown("### 📈 포트폴리오")
+    st.markdown(
+        '<h3 style="color:#F1F5F9;font-size:16px;font-weight:700;'
+        'letter-spacing:0.5px;margin:0 0 4px">PORTFOLIO</h3>'
+        '<p style="color:#475569;font-size:11px;margin:0 0 16px">투자 관리 대시보드</p>',
+        unsafe_allow_html=True,
+    )
     st.markdown("---")
     page = st.radio("페이지", PAGES, label_visibility="collapsed")
 
@@ -260,8 +282,9 @@ with st.sidebar:
 # ════════════════════════════════════════════════════════════════════════════
 if page == PAGES[0]:
     st.markdown(
-        '<h1 style="color:#1a1a1a;font-size:26px;font-weight:700;margin:0">'
-        '포트폴리오</h1>',
+        '<h1 style="color:#0F172A;font-size:28px;font-weight:800;'
+        'letter-spacing:-1px;margin:0 0 4px">포트폴리오</h1>'
+        '<p style="color:#94A3B8;font-size:13px;margin:0 0 20px">내 자산 현황</p>',
         unsafe_allow_html=True,
     )
 
@@ -301,7 +324,7 @@ if page == PAGES[0]:
   </div>
   <div>
     <div class="asset-krw">{krw:,.0f}원</div>
-    <div style="font-size:12px;color:#777;text-align:right">{pct_str}</div>
+    <div class="asset-pct">{pct_str}</div>
   </div>
 </div>"""
     html += '</div>'
