@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ─── CSS — Figma Financial Dashboard (Community) ─────────────────────────────
+# ─── CSS ──────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -19,34 +19,56 @@ st.markdown("""
 /* ── Global ── */
 html, body, [class*="css"] { font-family: 'Outfit', sans-serif !important; }
 [data-testid="stAppViewContainer"] { background: #f2f2f7; }
-[data-testid="stHeader"]           { background: transparent !important; }
-.block-container { padding-top: 2rem !important; max-width: 1100px; }
+
+/* ── Hide Streamlit chrome ── */
+header[data-testid="stHeader"] { display: none !important; }
+[data-testid="stToolbar"]      { display: none !important; }
+[data-testid="stDecoration"]   { display: none !important; }
+#MainMenu                       { display: none !important; }
+footer                          { display: none !important; }
+
+/* ── Layout ── */
+.block-container {
+    padding-top: 2.5rem !important;
+    padding-bottom: 4rem !important;
+    max-width: 1100px;
+}
 
 /* ── Sidebar ── */
-[data-testid="stSidebar"] { background: #ffffff !important; border-right: 1px solid #e5e5ea; }
+[data-testid="stSidebar"] {
+    background: #ffffff !important;
+    border-right: 1px solid #e5e5ea;
+}
+[data-testid="stSidebar"] > div:first-child {
+    padding-top: 1.5rem !important;
+}
 
 [data-testid="stSidebar"] .stRadio > div { gap: 2px; }
 [data-testid="stSidebar"] .stRadio > div > label {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     padding: 8px 10px;
     border-radius: 7px;
+    border: 1.5px solid transparent;
     font-size: 13px;
     font-weight: 500;
     color: #8e8e93;
     cursor: pointer;
-    transition: background 0.1s ease, color 0.1s ease;
+    transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
 }
 [data-testid="stSidebar"] .stRadio > div > label > div:first-child { display: none !important; }
 [data-testid="stSidebar"] .stRadio > div > label:hover {
     background: #f2f2f7;
     color: #2c2c2e;
 }
-[data-testid="stSidebar"] .stRadio > div > label[data-checked="true"] {
-    background: #3a3a3c !important;
-    color: #ffffff !important;
-    font-weight: 500;
+[data-testid="stSidebar"] .stRadio > div > label[data-checked="true"],
+[data-testid="stSidebar"] .stRadio > div > label:has(input:checked) {
+    background: transparent !important;
+    color: #2c2c2e !important;
+    font-weight: 600;
+    border-color: #2c2c2e !important;
 }
 [data-testid="stSidebar"] h3 { color: #2c2c2e !important; font-size: 14px !important; font-weight: 600 !important; }
 [data-testid="stSidebar"] hr { border-color: #e5e5ea !important; margin: 12px 0; }
@@ -64,18 +86,24 @@ html, body, [class*="css"] { font-family: 'Outfit', sans-serif !important; }
 /* ── Inputs ── */
 [data-testid="stNumberInput"] input,
 [data-testid="stTextInput"] input {
-    background: #ffffff;
-    border: 1px solid #e5e5ea;
+    background: transparent !important;
+    border: 1px solid #e5e5ea !important;
     border-radius: 8px;
     color: #2c2c2e;
     font-size: 14px;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'IBM Plex Mono', monospace;
 }
-
 [data-testid="stNumberInput"] input:focus,
 [data-testid="stTextInput"] input:focus {
-    outline: none;
-    border-color: #3a3a3c;
+    outline: none !important;
+    border-color: #2c2c2e !important;
+    box-shadow: none !important;
+}
+[data-testid="stNumberInput"] > div,
+[data-testid="stTextInput"] > div {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 /* ── Expander ── */
@@ -87,6 +115,43 @@ html, body, [class*="css"] { font-family: 'Outfit', sans-serif !important; }
 
 /* ── DataFrame ── */
 [data-testid="stDataFrame"] { border-radius: 12px; overflow: hidden; border: 1px solid #e5e5ea; }
+
+/* ── st.info / st.warning / st.success ── */
+[data-testid="stAlert"] {
+    border-radius: 10px;
+    border: 1px solid #e5e5ea;
+    background: #ffffff;
+    font-size: 13px;
+}
+
+/* ── Divider ── */
+hr { border-color: #e5e5ea !important; }
+
+/* ── Subheader / caption ── */
+[data-testid="stHeadingWithActionElements"] h2,
+[data-testid="stHeadingWithActionElements"] h3 {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #8e8e93 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    margin: 20px 0 10px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid #e5e5ea !important;
+}
+[data-testid="stCaptionContainer"] p {
+    font-size: 12px !important;
+    color: #8e8e93 !important;
+}
+
+/* ── Buttons ── */
+[data-testid="stBaseButton-secondary"] {
+    border: 1px solid #e5e5ea !important;
+    border-radius: 8px !important;
+    color: #2c2c2e !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 13px !important;
+}
 
 /* ── Asset card styles ── */
 .asset-card-wrap {
@@ -124,7 +189,7 @@ html, body, [class*="css"] { font-family: 'Outfit', sans-serif !important; }
 .total-num  { font-size: 40px; font-weight: 500; color: #2c2c2e; letter-spacing: -1px; margin: 6px 0 2px; font-family: 'IBM Plex Mono', monospace; }
 .total-lbl  { font-size: 11px; color: #8e8e93; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500; }
 .section-hd { font-size: 11px; font-weight: 600; color: #8e8e93; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 1.5px; padding-bottom: 8px; border-bottom: 1px solid #e5e5ea; }
-.quote-subtitle { font-size: 12px !important; color: #8e8e93 !important; font-style: italic !important; margin: 0 0 20px !important; }
+.quote-subtitle { font-size: 12px !important; color: #8e8e93 !important; font-style: italic !important; margin: 0 0 24px !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -343,15 +408,15 @@ PAGES = ["💼 포트폴리오", "💰 월 투자 배분", "⚖️ 리밸런싱"
 
 with st.sidebar:
     st.markdown(
-        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
+        '<div style="display:flex;align-items:center;gap:10px;padding:0 4px;margin-bottom:20px">'
         '<div style="width:28px;height:28px;border-radius:7px;background:#3a3a3c;'
         'display:flex;align-items:center;justify-content:center;'
-        'font-size:14px;color:white">📈</div>'
+        'font-size:14px;line-height:1">📈</div>'
         '<span style="font-size:14px;font-weight:600;color:#2c2c2e;letter-spacing:-0.3px">Portfolio</span>'
         '</div>',
         unsafe_allow_html=True,
     )
-    st.markdown("---")
+    st.markdown('<hr style="border:none;border-top:1px solid #e5e5ea;margin:0 4px 14px">', unsafe_allow_html=True)
     page = st.radio("페이지", PAGES, label_visibility="collapsed")
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -415,7 +480,7 @@ if page == PAGES[0]:
     st.markdown(html, unsafe_allow_html=True)
 
     # ── Edit expander ─────────────────────────────────────────────────────
-    with st.expander("✏️ 자산 편집"):
+    with st.expander("자산 편집"):
         for asset in list(assets):
             atype = st.session_state.get(f"type_{asset}", "투자")
             tc1, tc2 = st.columns([3, 2])
@@ -479,11 +544,11 @@ if page == PAGES[0]:
 #  PAGE 2 — 월 투자 배분
 # ════════════════════════════════════════════════════════════════════════════
 elif page == PAGES[1]:
-    st.markdown('<h1 style="color:#2c2c2e;font-size:24px;font-weight:700;margin:0 0 20px;letter-spacing:-0.8px">💰 이번 달 투자금 배분</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 style="color:#2c2c2e;font-size:24px;font-weight:700;margin:0 0 20px;letter-spacing:-0.8px">이번 달 투자금 배분</h1>', unsafe_allow_html=True)
     assets = st.session_state["assets"]
 
     # Target ratio + priority inputs
-    st.subheader("🎯 목표 비율 & 투자 우선순위")
+    st.subheader("목표 비율 & 투자 우선순위")
     st.caption("우선순위: 숫자가 낮을수록 먼저 채웁니다. 예산이 부족할 때 순서대로 배분됩니다.")
     hc1, hc2, hc3 = st.columns([3, 2, 1])
     hc1.markdown("**자산**")
@@ -533,7 +598,7 @@ elif page == PAGES[1]:
             )
 
     st.markdown("---")
-    st.subheader("📥 투자금 배분 계산")
+    st.subheader("투자금 배분 계산")
     budget = st.number_input("이번 달 투자 금액 (원)", min_value=0.0,
                              step=100_000.0, format="%.0f",
                              key="monthly_budget")
@@ -580,7 +645,7 @@ elif page == PAGES[1]:
 #  PAGE 3 — 리밸런싱
 # ════════════════════════════════════════════════════════════════════════════
 elif page == PAGES[2]:
-    st.markdown('<h1 style="color:#2c2c2e;font-size:24px;font-weight:700;margin:0 0 4px;letter-spacing:-0.8px">⚖️ 정기 리밸런싱 계산기</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 style="color:#2c2c2e;font-size:24px;font-weight:700;margin:0 0 4px;letter-spacing:-0.8px">정기 리밸런싱 계산기</h1>', unsafe_allow_html=True)
     st.caption("현재 포트폴리오를 목표 비율로 맞추기 위한 매수/매도 금액을 계산합니다.")
 
     holdings = all_krw()
@@ -666,7 +731,7 @@ elif page == PAGES[2]:
 #  PAGE 4 — 미래 수익 예측
 # ════════════════════════════════════════════════════════════════════════════
 elif page == PAGES[3]:
-    st.markdown('<h1 style="color:#2c2c2e;font-size:24px;font-weight:700;margin:0 0 4px;letter-spacing:-0.8px">📈 미래 수익 예측</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 style="color:#2c2c2e;font-size:24px;font-weight:700;margin:0 0 4px;letter-spacing:-0.8px">미래 수익 예측</h1>', unsafe_allow_html=True)
     st.caption("현재 자산 기준으로 최대 10년 뒤 예상 자산을 시뮬레이션합니다.")
 
     holdings = all_krw()
@@ -682,7 +747,7 @@ elif page == PAGES[3]:
         ) * 10_000
 
     st.markdown("---")
-    st.subheader("📊 시나리오별 연간 수익률 설정")
+    st.subheader("시나리오별 연간 수익률 설정")
 
     sc1, sc2, sc3 = st.columns(3)
     with sc1:
@@ -752,7 +817,7 @@ elif page == PAGES[3]:
     st.plotly_chart(fig, use_container_width=True, key="chart_tab4_forecast")
 
     # Summary table
-    st.subheader("📋 연도별 요약")
+    st.subheader("연도별 요약")
     df_summary = pd.DataFrame([{
         "기간":               f"{y}년",
         f"{sc_name1} (원)":  v1[y],
