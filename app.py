@@ -127,13 +127,6 @@ ICON_COLORS = [
     "#8E44AD", "#2EACDE", "#F39C12", "#16A085",
     "#D35400", "#2980B9",
 ]
-COLOR_BUY  = "#27AE60"
-COLOR_SELL = "#E74C3C"
-CHART_COLORS = [
-    (ICON_COLORS[0], "rgba(25,123,189,0.08)"),
-    (ICON_COLORS[2], "rgba(39,174,96,0.08)"),
-    (ICON_COLORS[1], "rgba(244,163,34,0.08)"),
-]
 DEFAULTS = {
     "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 1},
     "Bitcoin": {"qty": 0.0, "price": 0.0, "ratio": 15.0, "priority": 2},
@@ -202,6 +195,14 @@ def add_asset():
 def delete_asset(name: str):
     if name in st.session_state["assets"]:
         st.session_state["assets"].remove(name)
+
+
+# 위젯 key(_w_*)가 페이지 이동 시 삭제되므로 스토리지 key에 값을 별도 보존
+def _save_price(asset):    st.session_state[f"price_{asset}"]    = st.session_state.get(f"_w_price_{asset}", 0.0)
+def _save_qty(asset):      st.session_state[f"qty_{asset}"]      = st.session_state.get(f"_w_qty_{asset}", 0.0)
+def _save_type(asset):     st.session_state[f"type_{asset}"]     = st.session_state.get(f"_w_type_{asset}", "투자")
+def _save_ratio(asset):    st.session_state[f"ratio_{asset}"]    = st.session_state.get(f"_w_ratio_{asset}", 0.0)
+def _save_priority(asset): st.session_state[f"priority_{asset}"] = st.session_state.get(f"_w_priority_{asset}", 99)
 
 # ─── Algorithms ───────────────────────────────────────────────────────────────
 def calculate_investment(holdings, target_ratios, budget, priority_order=None):
@@ -315,7 +316,7 @@ if page == PAGES[0]:
     assets = st.session_state["assets"]
     st.markdown('<div class="section-hd">내 포트폴리오</div>', unsafe_allow_html=True)
 
-    rows_html = []
+    html = '<div class="asset-card-wrap">'
     for i, asset in enumerate(assets):
         krw     = holdings.get(asset, 0.0)
         color   = icon_color(i)
@@ -332,7 +333,7 @@ if page == PAGES[0]:
                 qty_str = f"{qty:,.4g}주"
             detail_str = f"{qty_str} · {krw:,.0f}원"
 
-        rows_html.append(f"""
+        html += f"""
 <div class="asset-row">
   <div class="asset-icon" style="background:{color}">{asset[0].upper()}</div>
   <div style="flex:1;min-width:0">
@@ -343,11 +344,9 @@ if page == PAGES[0]:
     <div class="asset-krw">{krw:,.0f}원</div>
     <div class="asset-pct">{pct_str}</div>
   </div>
-</div>""")
-    st.markdown(
-        '<div class="asset-card-wrap">' + "".join(rows_html) + "</div>",
-        unsafe_allow_html=True,
-    )
+</div>"""
+    html += '</div>'
+    st.markdown(html, unsafe_allow_html=True)
 
     # ── Edit expander ─────────────────────────────────────────────────────
     with st.expander("✏️ 자산 편집"):
@@ -358,16 +357,20 @@ if page == PAGES[0]:
                 st.markdown(f"**{asset}**")
             with tc2:
                 st.radio("유형", ["투자", "현금"], horizontal=True,
-                         key=f"type_{asset}",
+                         key=f"_w_type_{asset}",
                          index=0 if atype == "투자" else 1,
+                         on_change=_save_type, args=(asset,),
                          label_visibility="collapsed")
-            atype = st.session_state.get(f"type_{asset}", "투자")  # re-read after radio
+            atype = st.session_state.get(f"type_{asset}", "투자")  # 스토리지 key에서 재읽기
 
             if atype == "현금":
                 cc1, cc2 = st.columns([4, 0.7], vertical_alignment="bottom")
                 with cc1:
                     st.number_input("금액 (원)", min_value=0.0, step=1000.0,
-                                    format="%.0f", key=f"price_{asset}")
+                                    format="%.0f",
+                                    value=st.session_state.get(f"price_{asset}", 0.0),
+                                    key=f"_w_price_{asset}",
+                                    on_change=_save_price, args=(asset,))
                 with cc2:
                     st.button("🗑️", key=f"del_{asset}",
                               on_click=delete_asset, args=(asset,))
@@ -380,11 +383,17 @@ if page == PAGES[0]:
                 ic1, ic2, ic3 = st.columns([2, 3, 0.7], vertical_alignment="center")
                 with ic1:
                     st.number_input("수량", min_value=0.0, step=0.0001,
-                                    format="%.4f", key=f"qty_{asset}",
+                                    format="%.4f",
+                                    value=st.session_state.get(f"qty_{asset}", 0.0),
+                                    key=f"_w_qty_{asset}",
+                                    on_change=_save_qty, args=(asset,),
                                     label_visibility="collapsed")
                 with ic2:
                     st.number_input("평가금 (원)", min_value=0.0, step=10000.0,
-                                    format="%.0f", key=f"price_{asset}",
+                                    format="%.0f",
+                                    value=st.session_state.get(f"price_{asset}", 0.0),
+                                    key=f"_w_price_{asset}",
+                                    on_change=_save_price, args=(asset,),
                                     label_visibility="collapsed")
                 with ic3:
                     st.button("🗑️", key=f"del_{asset}",
@@ -419,11 +428,17 @@ elif page == PAGES[1]:
         c1.markdown(f"<div style='padding-top:8px'>{asset}</div>", unsafe_allow_html=True)
         with c2:
             st.number_input("비율", min_value=0.0, max_value=100.0,
-                            step=1.0, key=f"ratio_{asset}",
+                            step=1.0,
+                            value=st.session_state.get(f"ratio_{asset}", 0.0),
+                            key=f"_w_ratio_{asset}",
+                            on_change=_save_ratio, args=(asset,),
                             label_visibility="collapsed")
         with c3:
             st.number_input("순위", min_value=1, max_value=99,
-                            step=1, key=f"priority_{asset}",
+                            step=1,
+                            value=int(st.session_state.get(f"priority_{asset}", 99)),
+                            key=f"_w_priority_{asset}",
+                            on_change=_save_priority, args=(asset,),
                             label_visibility="collapsed")
 
     total_ratio = sum(float(st.session_state.get(f"ratio_{a}", 0)) for a in assets)
@@ -538,14 +553,14 @@ elif page == PAGES[2]:
 
         def color_rebalance(val):
             if isinstance(val, (int, float)):
-                if val > 500:   return f"color: {COLOR_BUY}"
-                if val < -500:  return f"color: {COLOR_SELL}"
+                if val > 500:   return "color: #27ae60"   # 매수 → 녹색
+                if val < -500:  return "color: #e74c3c"   # 매도 → 빨강
             return ""
 
         def color_shares(val):
             if isinstance(val, str):
-                if val.startswith("+"):                    return f"color: {COLOR_SELL}"
-                if val.startswith("-") and val != "-":     return f"color: {COLOR_BUY}"
+                if val.startswith("+"):  return "color: #e74c3c"
+                if val.startswith("-") and val != "-":  return "color: #27ae60"
             return ""
 
         st.dataframe(
@@ -628,6 +643,12 @@ elif page == PAGES[3]:
     v3 = project_portfolio(total, monthly_add, sc_rate3, years)
 
     year_labels = [f"{y}년" for y in range(years + 1)]
+
+    CHART_COLORS = [
+        ("#197BBD", "rgba(25,123,189,0.08)"),
+        ("#27AE60", "rgba(39,174,96,0.08)"),
+        ("#F4A322", "rgba(244,163,34,0.08)"),
+    ]
 
     fig = go.Figure()
     for (name, values), (line_color, fill_color) in zip(
