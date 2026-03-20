@@ -21,11 +21,7 @@ html, body, [class*="css"] { font-family: 'Outfit', sans-serif !important; }
 [data-testid="stAppViewContainer"] { background: #f2f2f7; }
 
 /* ── Hide Streamlit chrome ── */
-header[data-testid="stHeader"] { display: none !important; }
-[data-testid="stToolbar"]      { display: none !important; }
-[data-testid="stDecoration"]   { display: none !important; }
-#MainMenu                       { display: none !important; }
-footer                          { display: none !important; }
+footer { display: none !important; }
 
 /* ── Layout ── */
 .block-container {
