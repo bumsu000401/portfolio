@@ -127,6 +127,13 @@ ICON_COLORS = [
     "#8E44AD", "#2EACDE", "#F39C12", "#16A085",
     "#D35400", "#2980B9",
 ]
+COLOR_BUY  = "#27AE60"
+COLOR_SELL = "#E74C3C"
+CHART_COLORS = [
+    (ICON_COLORS[0], "rgba(25,123,189,0.08)"),
+    (ICON_COLORS[2], "rgba(39,174,96,0.08)"),
+    (ICON_COLORS[1], "rgba(244,163,34,0.08)"),
+]
 DEFAULTS = {
     "QLD":     {"qty": 0.0, "price": 0.0, "ratio": 30.0, "priority": 1},
     "Bitcoin": {"qty": 0.0, "price": 0.0, "ratio": 15.0, "priority": 2},
@@ -308,7 +315,7 @@ if page == PAGES[0]:
     assets = st.session_state["assets"]
     st.markdown('<div class="section-hd">내 포트폴리오</div>', unsafe_allow_html=True)
 
-    html = '<div class="asset-card-wrap">'
+    rows_html = []
     for i, asset in enumerate(assets):
         krw     = holdings.get(asset, 0.0)
         color   = icon_color(i)
@@ -325,7 +332,7 @@ if page == PAGES[0]:
                 qty_str = f"{qty:,.4g}주"
             detail_str = f"{qty_str} · {krw:,.0f}원"
 
-        html += f"""
+        rows_html.append(f"""
 <div class="asset-row">
   <div class="asset-icon" style="background:{color}">{asset[0].upper()}</div>
   <div style="flex:1;min-width:0">
@@ -336,9 +343,11 @@ if page == PAGES[0]:
     <div class="asset-krw">{krw:,.0f}원</div>
     <div class="asset-pct">{pct_str}</div>
   </div>
-</div>"""
-    html += '</div>'
-    st.markdown(html, unsafe_allow_html=True)
+</div>""")
+    st.markdown(
+        '<div class="asset-card-wrap">' + "".join(rows_html) + "</div>",
+        unsafe_allow_html=True,
+    )
 
     # ── Edit expander ─────────────────────────────────────────────────────
     with st.expander("✏️ 자산 편집"):
@@ -529,14 +538,14 @@ elif page == PAGES[2]:
 
         def color_rebalance(val):
             if isinstance(val, (int, float)):
-                if val > 500:   return "color: #27ae60"   # 매수 → 녹색
-                if val < -500:  return "color: #e74c3c"   # 매도 → 빨강
+                if val > 500:   return f"color: {COLOR_BUY}"
+                if val < -500:  return f"color: {COLOR_SELL}"
             return ""
 
         def color_shares(val):
             if isinstance(val, str):
-                if val.startswith("+"):  return "color: #e74c3c"
-                if val.startswith("-") and val != "-":  return "color: #27ae60"
+                if val.startswith("+"):                    return f"color: {COLOR_SELL}"
+                if val.startswith("-") and val != "-":     return f"color: {COLOR_BUY}"
             return ""
 
         st.dataframe(
@@ -619,12 +628,6 @@ elif page == PAGES[3]:
     v3 = project_portfolio(total, monthly_add, sc_rate3, years)
 
     year_labels = [f"{y}년" for y in range(years + 1)]
-
-    CHART_COLORS = [
-        ("#197BBD", "rgba(25,123,189,0.08)"),
-        ("#27AE60", "rgba(39,174,96,0.08)"),
-        ("#F4A322", "rgba(244,163,34,0.08)"),
-    ]
 
     fig = go.Figure()
     for (name, values), (line_color, fill_color) in zip(
