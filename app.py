@@ -341,7 +341,7 @@ if page == PAGES[0]:
     _q, _a = st.session_state["daily_quote"]
     st.markdown(
         '<h1 style="color:#404040;font-size:32px;font-weight:700;margin:0 0 4px">포트폴리오</h1>'
-        f'<p style="color:#AEAEAE;font-size:13px;margin:0 0 20px;font-style:italic">'
+        f'<p style="color:#AEAEAE;font-size:20px;margin:0 0 20px;font-style:italic">'
         f'&ldquo;{_q}&rdquo; — {_a}</p>',
         unsafe_allow_html=True,
     )
