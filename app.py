@@ -119,6 +119,7 @@ html, body, [class*="css"] { font-family: 'Lato', sans-serif !important; }
 .total-num  { font-size: 40px; font-weight: 700; color: #404040; letter-spacing: -1px; margin: 6px 0 2px; }
 .total-lbl  { font-size: 13px; color: #AEAEAE; margin-bottom: 20px; }
 .section-hd { font-size: 18px; font-weight: 700; color: #404040; margin: 20px 0 10px; }
+.quote-subtitle { font-size: 20px !important; color: #AEAEAE !important; font-style: italic !important; margin: 0 0 20px !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -341,7 +342,7 @@ if page == PAGES[0]:
     _q, _a = st.session_state["daily_quote"]
     st.markdown(
         '<h1 style="color:#404040;font-size:32px;font-weight:700;margin:0 0 4px">포트폴리오</h1>'
-        f'<p style="color:#AEAEAE;font-size:30px;margin:0 0 20px;font-style:italic">'
+        f'<p class="quote-subtitle">'
         f'&ldquo;{_q}&rdquo; — {_a}</p>',
         unsafe_allow_html=True,
     )
