@@ -198,11 +198,11 @@ def calculate_investment(holdings, target_ratios, budget):
 
 
 def calculate_rebalance(holdings, target_ratios):
-    """Positive = sell, Negative = buy."""
+    """Positive = buy, Negative = sell."""
     total = sum(holdings.values())
     if total == 0:
         return {a: 0.0 for a in holdings}
-    return {a: holdings.get(a, 0) - (target_ratios.get(a, 0) / 100) * total
+    return {a: (target_ratios.get(a, 0) / 100) * total - holdings.get(a, 0)
             for a in holdings}
 
 
@@ -457,7 +457,7 @@ with tab3:
             if unit is None or unit == 0:
                 return "-"
             shares = abs(amount_krw) / unit
-            sign = "+" if amount_krw < 0 else "-"
+            sign = "+" if amount_krw > 0 else "-"
             return f"{sign}{shares:.2f}주"
 
         rows = [{
@@ -474,14 +474,14 @@ with tab3:
 
         def color_rebalance(val):
             if isinstance(val, (int, float)):
-                if val > 500:   return "color: #e74c3c"   # 매도 → 빨강
-                if val < -500:  return "color: #27ae60"   # 매수 → 녹색
+                if val > 500:   return "color: #27ae60"   # 매수 → 녹색
+                if val < -500:  return "color: #e74c3c"   # 매도 → 빨강
             return ""
 
         def color_shares(val):
             if isinstance(val, str):
-                if val.startswith("+"):  return "color: #27ae60"
-                if val.startswith("-") and val != "-":  return "color: #e74c3c"
+                if val.startswith("+"):  return "color: #e74c3c"
+                if val.startswith("-") and val != "-":  return "color: #27ae60"
             return ""
 
         st.dataframe(
@@ -496,8 +496,8 @@ with tab3:
             use_container_width=True, hide_index=True,
         )
 
-        buy_total  = sum(-v for v in rebalance.values() if v < 0)
-        sell_total = sum( v for v in rebalance.values() if v > 0)
+        buy_total  = sum( v for v in rebalance.values() if v > 0)
+        sell_total = sum(-v for v in rebalance.values() if v < 0)
         m1, m2, m3 = st.columns(3)
         m1.metric("총 매수 필요", f"{buy_total:,.0f}원")
         m2.metric("총 매도 필요", f"{sell_total:,.0f}원")
