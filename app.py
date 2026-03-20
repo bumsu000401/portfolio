@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="포트폴리오",
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 # ─── CSS — light card UI ─────────────────────────────────────────────────────
@@ -21,23 +21,24 @@ st.markdown("""
 /* Fix tab clipping under Streamlit Cloud top bar */
 .block-container { padding-top: 3rem !important; }
 
-/* Tab bar */
-.stTabs [data-baseweb="tab-list"] {
-    background-color: #e8eaf0;
-    border-radius: 10px;
-    padding: 4px;
-    gap: 4px;
-}
-.stTabs [data-baseweb="tab"] {
-    color: #666666;
+/* Sidebar nav radio — hide default radio circles */
+[data-testid="stSidebar"] .stRadio > div { gap: 4px; }
+[data-testid="stSidebar"] .stRadio label {
+    display: block;
+    padding: 10px 14px;
     border-radius: 8px;
+    font-size: 15px;
     font-weight: 500;
-    font-size: 14px;
+    color: #555555;
+    cursor: pointer;
+    transition: background 0.15s;
 }
-.stTabs [aria-selected="true"] {
-    background-color: #ffffff !important;
-    color: #1a1a1a !important;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+[data-testid="stSidebar"] .stRadio label:hover { background: #f0f2f8; }
+[data-testid="stSidebar"] .stRadio [data-checked="true"] label,
+[data-testid="stSidebar"] .stRadio input:checked + div label {
+    background: #e8edf8;
+    color: #1a1a1a;
+    font-weight: 600;
 }
 
 /* Expander */
@@ -244,19 +245,19 @@ def make_pie(labels, values, title):
     return fig
 
 # ════════════════════════════════════════════════════════════════════════════
-#  TABS
+#  SIDEBAR NAVIGATION
 # ════════════════════════════════════════════════════════════════════════════
-tab1, tab2, tab3, tab4 = st.tabs([
-    "💼 포트폴리오",
-    "💰 월 투자 배분",
-    "⚖️ 리밸런싱",
-    "📈 미래 예측",
-])
+PAGES = ["💼 포트폴리오", "💰 월 투자 배분", "⚖️ 리밸런싱", "📈 미래 예측"]
+
+with st.sidebar:
+    st.markdown("### 📈 포트폴리오")
+    st.markdown("---")
+    page = st.radio("페이지", PAGES, label_visibility="collapsed")
 
 # ════════════════════════════════════════════════════════════════════════════
-#  TAB 1 — 포트폴리오 (dark card view)
+#  PAGE 1 — 포트폴리오
 # ════════════════════════════════════════════════════════════════════════════
-with tab1:
+if page == PAGES[0]:
     st.markdown(
         '<h1 style="color:#1a1a1a;font-size:26px;font-weight:700;margin:0">'
         '포트폴리오</h1>',
@@ -357,9 +358,9 @@ with tab1:
             st.button("＋ 추가", on_click=add_asset, use_container_width=True)
 
 # ════════════════════════════════════════════════════════════════════════════
-#  TAB 2 — 월 투자 배분
+#  PAGE 2 — 월 투자 배분
 # ════════════════════════════════════════════════════════════════════════════
-with tab2:
+elif page == PAGES[1]:
     st.header("💰 이번 달 투자금 배분")
     assets = st.session_state["assets"]
 
@@ -452,9 +453,9 @@ with tab2:
         st.info("투자 금액을 입력하면 자산별 배분 금액이 계산됩니다.")
 
 # ════════════════════════════════════════════════════════════════════════════
-#  TAB 3 — 리밸런싱
+#  PAGE 3 — 리밸런싱
 # ════════════════════════════════════════════════════════════════════════════
-with tab3:
+elif page == PAGES[2]:
     st.header("⚖️ 정기 리밸런싱 계산기")
     st.caption("현재 포트폴리오를 목표 비율로 맞추기 위한 매수/매도 금액을 계산합니다.")
 
@@ -538,9 +539,9 @@ with tab3:
             )
 
 # ════════════════════════════════════════════════════════════════════════════
-#  TAB 4 — 미래 수익 예측
+#  PAGE 4 — 미래 수익 예측
 # ════════════════════════════════════════════════════════════════════════════
-with tab4:
+elif page == PAGES[3]:
     st.header("📈 미래 수익 예측")
     st.caption("현재 자산 기준으로 최대 10년 뒤 예상 자산을 시뮬레이션합니다.")
 
