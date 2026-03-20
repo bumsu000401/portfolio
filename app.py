@@ -253,7 +253,7 @@ with tab1:
     hdr_col, rate_col = st.columns([4, 1])
     with hdr_col:
         st.markdown(
-            '<h1 style="color:#f0f0f0;font-size:26px;font-weight:700;margin:0">'
+            '<h1 style="color:#1a1a1a;font-size:26px;font-weight:700;margin:0">'
             '포트폴리오</h1>',
             unsafe_allow_html=True,
         )
@@ -284,20 +284,20 @@ with tab1:
         color    = icon_color(i)
         pct_str  = f"{krw / total * 100:.1f}%" if total > 0 else "0%"
 
-        price_str = f"${price:,.2f}" if cur == "USD" else f"{price:,.0f}원"
         if "bitcoin" in asset.lower() or "btc" in asset.lower():
             qty_str = f"{qty:.6f} BTC"
         elif cur == "KRW":
             qty_str = f"직접입력"
         else:
             qty_str = f"{qty:,.4g}주"
+        krw_str = f"{krw:,.0f}원"
 
         html += f"""
 <div class="asset-row">
   <div class="asset-icon" style="background:{color}">{asset[0].upper()}</div>
   <div style="flex:1;min-width:0">
     <div class="asset-name">{asset}</div>
-    <div class="asset-detail">{qty_str} · {price_str}</div>
+    <div class="asset-detail">{qty_str} · {krw_str}</div>
   </div>
   <div>
     <div class="asset-krw">{krw:,.0f}원</div>
