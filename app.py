@@ -250,14 +250,24 @@ _DARK = dict(
 
 def make_pie(labels, values, title):
     fig = go.Figure(go.Pie(
-        labels=labels, values=values, hole=0.38,
+        labels=labels, values=values, hole=0.44,
         textinfo="label+percent",
+        textfont=dict(size=12),
         hovertemplate="%{label}<br>%{value:,.0f}원<br>%{percent}<extra></extra>",
-        marker=dict(colors=ICON_COLORS[:len(labels)]),
+        marker=dict(
+            colors=ICON_COLORS[:len(labels)],
+            line=dict(color="#FFFFFF", width=2),
+        ),
+        rotation=90,
     ))
-    fig.update_layout(title_text=title, title_x=0.5,
-                      margin=dict(t=50, b=20, l=20, r=20),
-                      height=370, showlegend=False, **_DARK)
+    fig.update_layout(
+        title_text=title, title_x=0.5,
+        title_font=dict(size=14, color="#404040"),
+        margin=dict(t=50, b=20, l=20, r=20),
+        height=370, showlegend=False,
+        transition=dict(duration=500, easing="cubic-in-out"),
+        **_DARK,
+    )
     return fig
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -610,32 +620,45 @@ elif page == PAGES[3]:
 
     year_labels = [f"{y}년" for y in range(years + 1)]
 
+    CHART_COLORS = [
+        ("#197BBD", "rgba(25,123,189,0.08)"),
+        ("#27AE60", "rgba(39,174,96,0.08)"),
+        ("#F4A322", "rgba(244,163,34,0.08)"),
+    ]
+
     fig = go.Figure()
-    for name, values, color in [
-        (sc_name1, v1, "#4e9af1"),
-        (sc_name2, v2, "#26de81"),
-        (sc_name3, v3, "#f7b731"),
-    ]:
-        fig.add_trace(go.Bar(
+    for (name, values), (line_color, fill_color) in zip(
+        [(sc_name1, v1), (sc_name2, v2), (sc_name3, v3)], CHART_COLORS
+    ):
+        fig.add_trace(go.Scatter(
             name=name,
             x=year_labels,
             y=values,
-            marker_color=color,
+            mode="lines+markers",
+            line=dict(shape="spline", smoothing=1.3, width=2.5, color=line_color),
+            marker=dict(size=7, color=line_color,
+                        line=dict(color="#FFFFFF", width=2)),
+            fill="tozeroy",
+            fillcolor=fill_color,
             hovertemplate=f"<b>{name}</b><br>%{{x}}: %{{y:,.0f}}원<extra></extra>",
         ))
 
     fig.update_layout(
-        barmode="group",
-        title="연도별 예상 자산 (원)",
+        title="연도별 예상 자산",
+        title_font=dict(size=15, color="#404040"),
         xaxis_title="기간",
         yaxis_title="자산 (원)",
-        legend=dict(bgcolor="#f5f5f5", bordercolor="#ddd", borderwidth=1),
-        height=500,
+        legend=dict(
+            bgcolor="#FFFFFF", bordercolor="#EBEBEB", borderwidth=1,
+            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,
+        ),
+        height=480,
         hovermode="x unified",
+        transition=dict(duration=600, easing="cubic-in-out"),
         **_DARK,
     )
-    fig.update_xaxes(gridcolor="#e8e8e8")
-    fig.update_yaxes(gridcolor="#e8e8e8", tickformat=",d")
+    fig.update_xaxes(gridcolor="#F0F0F0", showline=False, zeroline=False)
+    fig.update_yaxes(gridcolor="#F0F0F0", showline=False, zeroline=False, tickformat=",d")
     st.plotly_chart(fig, use_container_width=True, key="chart_tab4_forecast")
 
     # Summary table
