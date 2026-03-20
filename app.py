@@ -355,7 +355,7 @@ with tab1:
                     st.button("🗑️", key=f"del_{asset}",
                               on_click=delete_asset, args=(asset,))
             else:
-                ic1, ic2, ic3 = st.columns([2, 3, 0.7])
+                ic1, ic2, ic3 = st.columns([2, 3, 0.7], vertical_alignment="center")
                 with ic1:
                     st.number_input("수량", min_value=0.0, step=0.0001,
                                     format="%.4f", key=f"qty_{asset}",
@@ -368,7 +368,6 @@ with tab1:
                     unit = get_unit_price(asset)
                     st.caption(f"평가금 (원)  |  단가 ≈ {unit:,.0f}원" if unit else "평가금 (원)")
                 with ic3:
-                    st.write("")
                     st.button("🗑️", key=f"del_{asset}",
                               on_click=delete_asset, args=(asset,))
             st.divider()
