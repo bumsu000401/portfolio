@@ -611,8 +611,8 @@ elif page == PAGES[2]:
                 "목표 비율 (%)":   "{:.1f}",
                 "목표 금액 (원)":  "{:,.0f}",
                 "매수/매도 (원)":  "{:+,.0f}",
-            }).applymap(color_rebalance, subset=["매수/매도 (원)"])
-              .applymap(color_shares,    subset=["매수/매도 (주)"]),
+            }).map(color_rebalance, subset=["매수/매도 (원)"])
+              .map(color_shares,    subset=["매수/매도 (주)"]),
             use_container_width=True, hide_index=True,
         )
 
