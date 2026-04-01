@@ -502,7 +502,7 @@ elif page == PAGES[1]:
             )
         with pc2:
             st.plotly_chart(
-                make_pie(assets, [ratios.get(a, 0) for a in assets], "목표 비율"),
+                make_pie(assets, [(ratios.get(a, 0) / 100) * total for a in assets], "목표 비율"),
                 use_container_width=True,
                 key="pie_tab1_target",
             )
@@ -632,7 +632,7 @@ elif page == PAGES[2]:
             )
         with rc2:
             st.plotly_chart(
-                make_pie(assets, [ratios.get(a, 0) for a in assets], "목표 비율"),
+                make_pie(assets, [(ratios.get(a, 0) / 100) * total for a in assets], "목표 비율"),
                 use_container_width=True,
                 key="pie_tab3_target",
             )
