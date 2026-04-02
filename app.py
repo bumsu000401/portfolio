@@ -519,9 +519,16 @@ elif page == PAGES[1]:
         post       = {a: holdings.get(a, 0) + alloc.get(a, 0) for a in assets}
         post_total = sum(post.values())
 
+        def _calc_shares(asset: str, amount: float) -> float:
+            if st.session_state.get(f"type_{asset}", "투자") == "현금":
+                return 0.0
+            unit = get_unit_price(asset)
+            return amount / unit if (unit and unit > 0 and amount > 0) else 0.0
+
         rows = [{
             "자산": a,
             "투자 금액 (원)":      alloc.get(a, 0),
+            "구매 수량":           _calc_shares(a, alloc.get(a, 0)),
             "투자 후 금액 (원)":   post[a],
             "투자 후 비율 (%)":    post[a] / post_total * 100 if post_total > 0 else 0,
             "목표 비율 (%)":       ratios.get(a, 0),
@@ -531,6 +538,7 @@ elif page == PAGES[1]:
         st.dataframe(
             df.style.format({
                 "투자 금액 (원)":    "{:,.0f}",
+                "구매 수량":         lambda x: f"{x:.4f}주" if x > 0 else "-",
                 "투자 후 금액 (원)": "{:,.0f}",
                 "투자 후 비율 (%)":  "{:.1f}",
                 "목표 비율 (%)":     "{:.1f}",
